@@ -8,6 +8,8 @@ import Auth from "./pages/Auth.tsx";
 import ClientDashboard from "./pages/ClientDashboard.tsx";
 import HotelDashboard from "./pages/HotelDashboard.tsx";
 import PublicNeeds from "./pages/PublicNeeds.tsx";
+import StandPage from "./pages/StandPage.tsx";
+import AdminDashboard from "./pages/AdminDashboard.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -24,6 +26,8 @@ const App = () => (
           <Route path="/client-dashboard" element={<ClientDashboard />} />
           <Route path="/hotel-dashboard" element={<HotelDashboard />} />
           <Route path="/besoins" element={<PublicNeeds />} />
+          <Route path="/stand/:code" element={<StandPage />} />
+          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
