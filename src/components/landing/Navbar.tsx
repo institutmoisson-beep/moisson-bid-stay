@@ -18,6 +18,9 @@ const Navbar = () => {
           <a href="#how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors font-body">
             Comment ça marche
           </a>
+          <span className="text-sm text-muted-foreground hover:text-foreground transition-colors font-body cursor-pointer" onClick={() => navigate("/besoins")}>
+            Besoins en cours
+          </span>
         </div>
 
         <div className="flex items-center gap-3">
