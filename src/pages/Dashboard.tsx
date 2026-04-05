@@ -7,6 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, LogOut, Home, Pencil, Trash2, X } from "lucide-react";
+import type { Tables } from "@/integrations/supabase/types";
+
+type Residence = Tables<"residences">;
 
 interface Residence {
   id: string;
