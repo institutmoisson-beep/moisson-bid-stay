@@ -106,6 +106,93 @@ export type Database = {
           },
         ]
       }
+      orders: {
+        Row: {
+          amount: number
+          client_id: string
+          created_at: string
+          host_id: string
+          host_message: string | null
+          id: string
+          need_id: string
+          payment_method: string
+          residence_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          client_id: string
+          created_at?: string
+          host_id: string
+          host_message?: string | null
+          id?: string
+          need_id: string
+          payment_method?: string
+          residence_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          client_id?: string
+          created_at?: string
+          host_id?: string
+          host_message?: string | null
+          id?: string
+          need_id?: string
+          payment_method?: string
+          residence_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_need_id_fkey"
+            columns: ["need_id"]
+            isOneToOne: false
+            referencedRelation: "needs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_residence_id_fkey"
+            columns: ["residence_id"]
+            isOneToOne: false
+            referencedRelation: "residences"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_methods: {
+        Row: {
+          created_at: string
+          details: string
+          id: string
+          is_active: boolean
+          link: string | null
+          name: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          details: string
+          id?: string
+          is_active?: boolean
+          link?: string | null
+          name: string
+          type: string
+        }
+        Update: {
+          created_at?: string
+          details?: string
+          id?: string
+          is_active?: boolean
+          link?: string | null
+          name?: string
+          type?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -145,51 +232,104 @@ export type Database = {
         }
         Relationships: []
       }
+      residence_images: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          image_url: string
+          residence_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          image_url: string
+          residence_id: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          image_url?: string
+          residence_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "residence_images_residence_id_fkey"
+            columns: ["residence_id"]
+            isOneToOne: false
+            referencedRelation: "residences"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       residences: {
         Row: {
           address: string
           amenities: string[] | null
           bedrooms: number
           capacity: number
+          city: string
+          country: string
           created_at: string
           description: string | null
+          facebook_url: string | null
+          gps_lat: number | null
+          gps_lng: number | null
           host_id: string
           id: string
           is_published: boolean
           min_price: number
           name: string
+          neighborhood: string
           type: string
           updated_at: string
+          whatsapp_contact: string
         }
         Insert: {
           address: string
           amenities?: string[] | null
           bedrooms?: number
           capacity?: number
+          city?: string
+          country?: string
           created_at?: string
           description?: string | null
+          facebook_url?: string | null
+          gps_lat?: number | null
+          gps_lng?: number | null
           host_id: string
           id?: string
           is_published?: boolean
           min_price?: number
           name: string
+          neighborhood?: string
           type?: string
           updated_at?: string
+          whatsapp_contact?: string
         }
         Update: {
           address?: string
           amenities?: string[] | null
           bedrooms?: number
           capacity?: number
+          city?: string
+          country?: string
           created_at?: string
           description?: string | null
+          facebook_url?: string | null
+          gps_lat?: number | null
+          gps_lng?: number | null
           host_id?: string
           id?: string
           is_published?: boolean
           min_price?: number
           name?: string
+          neighborhood?: string
           type?: string
           updated_at?: string
+          whatsapp_contact?: string
         }
         Relationships: []
       }
@@ -211,11 +351,72 @@ export type Database = {
         }
         Relationships: []
       }
+      wallet_transactions: {
+        Row: {
+          amount: number
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          description: string | null
+          id: string
+          payment_method_id: string | null
+          recipient_code: string | null
+          recipient_email: string | null
+          reference: string | null
+          status: string
+          transaction_id_external: string | null
+          type: string
+          user_id: string
+          withdrawal_contact: string | null
+          withdrawal_method: string | null
+        }
+        Insert: {
+          amount: number
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          payment_method_id?: string | null
+          recipient_code?: string | null
+          recipient_email?: string | null
+          reference?: string | null
+          status?: string
+          transaction_id_external?: string | null
+          type: string
+          user_id: string
+          withdrawal_contact?: string | null
+          withdrawal_method?: string | null
+        }
+        Update: {
+          amount?: number
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          payment_method_id?: string | null
+          recipient_code?: string | null
+          recipient_email?: string | null
+          reference?: string | null
+          status?: string
+          transaction_id_external?: string | null
+          type?: string
+          user_id?: string
+          withdrawal_contact?: string | null
+          withdrawal_method?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      approve_wallet_transaction: {
+        Args: { admin_id: string; transaction_id: string }
+        Returns: boolean
+      }
       generate_moissonneur_code: { Args: never; Returns: string }
       has_role: {
         Args: {
@@ -223,6 +424,14 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      process_wallet_transfer: {
+        Args: {
+          recipient_identifier: string
+          sender_id: string
+          transfer_amount: number
+        }
+        Returns: string
       }
     }
     Enums: {
