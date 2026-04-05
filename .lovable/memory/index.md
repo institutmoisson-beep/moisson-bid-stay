@@ -5,10 +5,12 @@ Moisson - plateforme offres inversées clients/résidences. Premium noir & or th
 Playfair Display headings, Inter body. Primary gold #D4A017 (HSL 43 100% 50%).
 Lovable Cloud enabled. Profiles auto-created on signup with MSN code.
 User roles in separate user_roles table. Never store roles on profiles.
-Separate dashboards: /client-dashboard (clients) and /hotel-dashboard (hosts).
-Auth redirects by role from profiles table.
+Separate dashboards: /client-dashboard, /hotel-dashboard, /admin.
+Auth redirects by role. Admin: picelvus@gmail.com.
+Wallet with recharge (admin-validated), transfer by MSN code/email, withdrawal.
 
 ## Memories
 - [Design tokens](mem://design/tokens) — Black & gold premium palette, gradients, glass effects
-- [Database schema](mem://features/schema) — profiles, residences, user_roles, needs, notifications tables with RLS
+- [Database schema](mem://features/schema) — profiles, residences, residence_images, user_roles, needs, notifications, orders, wallet_transactions, payment_methods
 - [Auth flow](mem://features/auth) — Email signup with role selection (client/host), auto-profile creation, role-based redirect
+- [Roles](mem://features/roles) — admin, financier, hotel_manager, stand_manager, needs_manager, commercial, communication, it_manager
