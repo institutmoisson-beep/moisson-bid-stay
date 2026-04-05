@@ -5,7 +5,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import Auth from "./pages/Auth.tsx";
-import Dashboard from "./pages/Dashboard.tsx";
+import ClientDashboard from "./pages/ClientDashboard.tsx";
+import HotelDashboard from "./pages/HotelDashboard.tsx";
+import PublicNeeds from "./pages/PublicNeeds.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -19,7 +21,9 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/client-dashboard" element={<ClientDashboard />} />
+          <Route path="/hotel-dashboard" element={<HotelDashboard />} />
+          <Route path="/besoins" element={<PublicNeeds />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

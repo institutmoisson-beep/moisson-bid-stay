@@ -17,15 +17,24 @@ const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  const redirectByRole = async (userId: string) => {
+    const { data: profile } = await supabase.from("profiles").select("role").eq("user_id", userId).single();
+    if (profile?.role === "host") {
+      navigate("/hotel-dashboard");
+    } else {
+      navigate("/client-dashboard");
+    }
+  };
+
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
-        navigate("/dashboard");
+        redirectByRole(session.user.id);
       }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) navigate("/dashboard");
+      if (session) redirectByRole(session.user.id);
     });
 
     return () => subscription.unsubscribe();
@@ -73,34 +82,13 @@ const Auth = () => {
             <>
               <div>
                 <Label className="font-body">Nom complet</Label>
-                <Input
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Jean Dupont"
-                  required
-                  className="mt-1"
-                />
+                <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Jean Dupont" required className="mt-1" />
               </div>
-
               <div>
                 <Label className="font-body">Je suis</Label>
                 <div className="grid grid-cols-2 gap-2 mt-1">
-                  <Button
-                    type="button"
-                    variant={role === "client" ? "gold" : "outline"}
-                    size="sm"
-                    onClick={() => setRole("client")}
-                  >
-                    Client
-                  </Button>
-                  <Button
-                    type="button"
-                    variant={role === "host" ? "gold" : "outline"}
-                    size="sm"
-                    onClick={() => setRole("host")}
-                  >
-                    Hôte
-                  </Button>
+                  <Button type="button" variant={role === "client" ? "gold" : "outline"} size="sm" onClick={() => setRole("client")}>Client</Button>
+                  <Button type="button" variant={role === "host" ? "gold" : "outline"} size="sm" onClick={() => setRole("host")}>Hôte / Hôtel</Button>
                 </div>
               </div>
             </>
@@ -108,27 +96,11 @@ const Auth = () => {
 
           <div>
             <Label className="font-body">Email</Label>
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="email@exemple.com"
-              required
-              className="mt-1"
-            />
+            <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email@exemple.com" required className="mt-1" />
           </div>
-
           <div>
             <Label className="font-body">Mot de passe</Label>
-            <Input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-              minLength={6}
-              className="mt-1"
-            />
+            <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required minLength={6} className="mt-1" />
           </div>
 
           <Button type="submit" variant="gold" className="w-full" disabled={loading}>
@@ -137,11 +109,7 @@ const Auth = () => {
 
           <p className="text-center text-sm text-muted-foreground font-body">
             {isSignUp ? "Déjà un compte ?" : "Pas encore de compte ?"}{" "}
-            <button
-              type="button"
-              className="text-primary hover:underline"
-              onClick={() => setIsSignUp(!isSignUp)}
-            >
+            <button type="button" className="text-primary hover:underline" onClick={() => setIsSignUp(!isSignUp)}>
               {isSignUp ? "Se connecter" : "S'inscrire"}
             </button>
           </p>
