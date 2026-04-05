@@ -57,7 +57,7 @@ const Dashboard = () => {
       .eq("host_id", userId)
       .order("created_at", { ascending: false });
 
-    if (!error && data) setResidences(data as Residence[]);
+    if (!error && data) setResidences(data);
     setLoading(false);
   };
 
