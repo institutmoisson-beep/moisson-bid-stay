@@ -14,6 +14,98 @@ export type Database = {
   }
   public: {
     Tables: {
+      needs: {
+        Row: {
+          budget: number
+          capacity: number
+          check_in: string | null
+          check_out: string | null
+          city: string
+          country: string
+          created_at: string
+          description: string | null
+          id: string
+          neighborhood: string
+          status: string
+          type_needed: string
+          updated_at: string
+          user_id: string
+          whatsapp_contact: string
+        }
+        Insert: {
+          budget?: number
+          capacity?: number
+          check_in?: string | null
+          check_out?: string | null
+          city: string
+          country?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          neighborhood: string
+          status?: string
+          type_needed?: string
+          updated_at?: string
+          user_id: string
+          whatsapp_contact: string
+        }
+        Update: {
+          budget?: number
+          capacity?: number
+          check_in?: string | null
+          check_out?: string | null
+          city?: string
+          country?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          neighborhood?: string
+          status?: string
+          type_needed?: string
+          updated_at?: string
+          user_id?: string
+          whatsapp_contact?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          need_id: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          need_id?: string | null
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          need_id?: string | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_need_id_fkey"
+            columns: ["need_id"]
+            isOneToOne: false
+            referencedRelation: "needs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
