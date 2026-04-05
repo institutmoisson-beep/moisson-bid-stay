@@ -11,18 +11,6 @@ import type { Tables } from "@/integrations/supabase/types";
 
 type Residence = Tables<"residences">;
 
-interface Residence {
-  id: string;
-  name: string;
-  address: string;
-  type: string;
-  capacity: number;
-  bedrooms: number;
-  min_price: number;
-  description: string;
-  amenities: string[];
-  created_at: string;
-}
 
 const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
