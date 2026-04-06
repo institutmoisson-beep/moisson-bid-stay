@@ -10,6 +10,7 @@ import HotelDashboard from "./pages/HotelDashboard.tsx";
 import PublicNeeds from "./pages/PublicNeeds.tsx";
 import StandPage from "./pages/StandPage.tsx";
 import AdminDashboard from "./pages/AdminDashboard.tsx";
+import CityManagerDashboard from "./pages/CityManagerDashboard.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/besoins" element={<PublicNeeds />} />
           <Route path="/stand/:code" element={<StandPage />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/city-manager" element={<CityManagerDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

@@ -7,11 +7,13 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import {
   Users, Home, List, ArrowLeft, ShieldCheck, Wallet, Eye,
-  Check, XCircle, Plus, Trash2, CreditCard, UserCog
+  Check, XCircle, Plus, Trash2, CreditCard, UserCog, Settings,
+  Ban, Power, MapPin
 } from "lucide-react";
 
 const ROLE_LABELS: Record<string, string> = {
   admin: "Administrateur",
+  city_manager: "Chef de ville",
   financier: "Financier",
   hotel_manager: "Gestion des hôtels",
   stand_manager: "Gestion des stands",
@@ -36,9 +38,11 @@ const AdminDashboard = () => {
   const [allOrders, setAllOrders] = useState<any[]>([]);
   const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
   const [userRoles, setUserRoles] = useState<any[]>([]);
+  const [platformSettings, setPlatformSettings] = useState<any[]>([]);
   const [pmForm, setPmForm] = useState({ name: "", type: "mobile_money", details: "", link: "" });
   const [showPmForm, setShowPmForm] = useState(false);
   const [roleAssign, setRoleAssign] = useState({ userId: "", role: "financier" });
+  const [cityManagerAssign, setCityManagerAssign] = useState({ userId: "", country: "Cameroun", city: "" });
 
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -63,7 +67,7 @@ const AdminDashboard = () => {
   };
 
   const fetchAll = async () => {
-    const [profR, needsR, resR, txR, ordR, pmR, rolesR] = await Promise.all([
+    const [profR, needsR, resR, txR, ordR, pmR, rolesR, settingsR] = await Promise.all([
       supabase.from("profiles").select("*").order("created_at", { ascending: false }),
       supabase.from("needs").select("*").order("created_at", { ascending: false }),
       supabase.from("residences").select("*").order("created_at", { ascending: false }),
@@ -71,6 +75,7 @@ const AdminDashboard = () => {
       supabase.from("orders").select("*").order("created_at", { ascending: false }),
       supabase.from("payment_methods").select("*").order("created_at", { ascending: false }),
       supabase.from("user_roles").select("*"),
+      supabase.from("platform_settings").select("*"),
     ]);
 
     if (profR.data) {
@@ -83,6 +88,7 @@ const AdminDashboard = () => {
     if (ordR.data) setAllOrders(ordR.data);
     if (pmR.data) setPaymentMethods(pmR.data);
     if (rolesR.data) setUserRoles(rolesR.data);
+    if (settingsR.data) setPlatformSettings(settingsR.data);
     setLoading(false);
   };
 
@@ -113,7 +119,6 @@ const AdminDashboard = () => {
 
   const assignRole = async () => {
     if (!roleAssign.userId) return;
-    // Find user_id from profiles
     const profile = [...clients, ...hosts].find(p => p.id === roleAssign.userId || p.user_id === roleAssign.userId);
     if (!profile) { toast({ title: "Utilisateur introuvable", variant: "destructive" }); return; }
     const { error } = await supabase.from("user_roles").insert({ user_id: profile.user_id, role: roleAssign.role as any });
@@ -123,9 +128,49 @@ const AdminDashboard = () => {
     } else { toast({ title: "Rôle assigné" }); fetchAll(); }
   };
 
+  const assignCityManager = async () => {
+    if (!cityManagerAssign.userId || !cityManagerAssign.city) return;
+    const profile = [...clients, ...hosts].find(p => p.id === cityManagerAssign.userId || p.user_id === cityManagerAssign.userId);
+    if (!profile) { toast({ title: "Utilisateur introuvable", variant: "destructive" }); return; }
+    // First assign city_manager role
+    await supabase.from("user_roles").insert({ user_id: profile.user_id, role: "city_manager" as any }).select();
+    // Then assign zone
+    const { error } = await supabase.from("city_manager_zones").insert({ 
+      user_id: profile.user_id, country: cityManagerAssign.country, city: cityManagerAssign.city 
+    });
+    if (error && error.message.includes("duplicate")) toast({ title: "Cette zone est déjà assignée." });
+    else if (error) toast({ title: "Erreur", description: error.message, variant: "destructive" });
+    else { toast({ title: "Chef de ville assigné" }); fetchAll(); }
+  };
+
   const removeRole = async (roleId: string) => {
     await supabase.from("user_roles").delete().eq("id", roleId);
     toast({ title: "Rôle retiré" }); fetchAll();
+  };
+
+  // User action buttons
+  const updateUserStatus = async (userId: string, status: string) => {
+    const { error } = await supabase.from("profiles").update({ status }).eq("user_id", userId);
+    if (error) toast({ title: "Erreur", description: error.message, variant: "destructive" });
+    else { toast({ title: `Utilisateur ${status === "active" ? "activé" : status === "suspended" ? "suspendu" : "supprimé"}` }); fetchAll(); }
+  };
+
+  const updateNeedStatus = async (needId: string, status: string) => {
+    const { error } = await supabase.from("needs").update({ status }).eq("id", needId);
+    if (error) toast({ title: "Erreur", description: error.message, variant: "destructive" });
+    else { toast({ title: `Besoin ${status}` }); fetchAll(); }
+  };
+
+  const updateOrderStatus = async (orderId: string, status: string) => {
+    const { error } = await supabase.from("orders").update({ status }).eq("id", orderId);
+    if (error) toast({ title: "Erreur", description: error.message, variant: "destructive" });
+    else { toast({ title: `Commande ${status}` }); fetchAll(); }
+  };
+
+  const updateSetting = async (key: string, value: string) => {
+    const { error } = await supabase.from("platform_settings").update({ value, updated_at: new Date().toISOString() }).eq("key", key);
+    if (error) toast({ title: "Erreur", description: error.message, variant: "destructive" });
+    else { toast({ title: "Paramètre mis à jour" }); fetchAll(); }
   };
 
   const handleSignOut = async () => { await supabase.auth.signOut(); navigate("/"); };
@@ -143,6 +188,7 @@ const AdminDashboard = () => {
     { key: "transactions", label: "Transactions", icon: Wallet },
     { key: "payments", label: "Paiements", icon: CreditCard },
     { key: "roles", label: "Rôles", icon: UserCog },
+    { key: "settings", label: "Paramètres", icon: Settings },
   ];
 
   return (
@@ -189,12 +235,19 @@ const AdminDashboard = () => {
             <h2 className="text-xl font-heading font-bold text-foreground">Clients ({clients.length})</h2>
             <div className="grid gap-3">
               {clients.map(p => (
-                <div key={p.id} className="p-4 rounded-xl bg-card border border-border flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-semibold text-foreground font-body">{p.full_name || "—"}</p>
-                    <p className="text-xs text-muted-foreground font-body">{p.moissonneur_code} · Solde: {p.wallet_balance} FCFA</p>
+                <div key={p.id} className="p-4 rounded-xl bg-card border border-border">
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <p className="text-sm font-semibold text-foreground font-body">{p.full_name || "—"}</p>
+                      <p className="text-xs text-muted-foreground font-body">{p.moissonneur_code} · {p.city}, {p.country} · Solde: {p.wallet_balance} FCFA</p>
+                    </div>
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-body ${p.status === "active" ? "bg-green-500/20 text-green-400" : p.status === "suspended" ? "bg-yellow-500/20 text-yellow-400" : "bg-destructive/20 text-destructive"}`}>{p.status || "active"}</span>
                   </div>
-                  <span className="text-xs text-muted-foreground font-body">{new Date(p.created_at).toLocaleDateString("fr-FR")}</span>
+                  <div className="flex gap-2">
+                    {p.status !== "suspended" && <Button variant="outline" size="sm" onClick={() => updateUserStatus(p.user_id, "suspended")} className="text-xs"><Ban className="w-3 h-3 mr-1" />Suspendre</Button>}
+                    {p.status === "suspended" && <Button variant="gold" size="sm" onClick={() => updateUserStatus(p.user_id, "active")} className="text-xs"><Power className="w-3 h-3 mr-1" />Activer</Button>}
+                    <Button variant="destructive" size="sm" onClick={() => updateUserStatus(p.user_id, "deleted")} className="text-xs"><Trash2 className="w-3 h-3 mr-1" />Supprimer</Button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -202,12 +255,22 @@ const AdminDashboard = () => {
             <h2 className="text-xl font-heading font-bold text-foreground mt-8">Hôtels ({hosts.length})</h2>
             <div className="grid gap-3">
               {hosts.map(p => (
-                <div key={p.id} className="p-4 rounded-xl bg-card border border-border flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-semibold text-foreground font-body">{p.full_name || "—"}</p>
-                    <p className="text-xs text-muted-foreground font-body">{p.moissonneur_code} · Solde: {p.wallet_balance} FCFA</p>
+                <div key={p.id} className="p-4 rounded-xl bg-card border border-border">
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <p className="text-sm font-semibold text-foreground font-body">{p.full_name || "—"}</p>
+                      <p className="text-xs text-muted-foreground font-body">{p.moissonneur_code} · {p.city}, {p.country} · Solde: {p.wallet_balance} FCFA</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-body ${p.status === "active" ? "bg-green-500/20 text-green-400" : p.status === "suspended" ? "bg-yellow-500/20 text-yellow-400" : "bg-destructive/20 text-destructive"}`}>{p.status || "active"}</span>
+                      <Button variant="ghost" size="sm" onClick={() => navigate(`/stand/${p.moissonneur_code}`)} className="text-xs text-primary">Stand</Button>
+                    </div>
                   </div>
-                  <Button variant="ghost" size="sm" onClick={() => navigate(`/stand/${p.moissonneur_code}`)} className="text-xs text-primary">Stand</Button>
+                  <div className="flex gap-2">
+                    {p.status !== "suspended" && <Button variant="outline" size="sm" onClick={() => updateUserStatus(p.user_id, "suspended")} className="text-xs"><Ban className="w-3 h-3 mr-1" />Suspendre</Button>}
+                    {p.status === "suspended" && <Button variant="gold" size="sm" onClick={() => updateUserStatus(p.user_id, "active")} className="text-xs"><Power className="w-3 h-3 mr-1" />Activer</Button>}
+                    <Button variant="destructive" size="sm" onClick={() => updateUserStatus(p.user_id, "deleted")} className="text-xs"><Trash2 className="w-3 h-3 mr-1" />Supprimer</Button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -222,11 +285,19 @@ const AdminDashboard = () => {
               {allNeeds.map(n => (
                 <div key={n.id} className="p-4 rounded-xl bg-card border border-border">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-semibold text-foreground font-body capitalize">{n.type_needed}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-foreground font-body capitalize">{n.type_needed}</span>
+                      {n.room_standard && n.room_standard !== "standard" && <span className="px-2 py-0.5 rounded-full text-xs bg-primary/10 text-primary font-body capitalize">{n.room_standard}</span>}
+                    </div>
                     <span className={`px-2 py-0.5 rounded-full text-xs font-body ${n.status === "active" ? "bg-green-500/20 text-green-400" : "bg-muted text-muted-foreground"}`}>{n.status}</span>
                   </div>
                   <p className="text-xs text-muted-foreground font-body">{n.neighborhood}, {n.city} — {n.country} · {n.budget} FCFA · {n.capacity} pers.</p>
                   <p className="text-xs text-muted-foreground font-body mt-1">{new Date(n.created_at).toLocaleString("fr-FR")}</p>
+                  <div className="flex gap-2 mt-2">
+                    {n.status === "active" && <Button variant="outline" size="sm" onClick={() => updateNeedStatus(n.id, "cancelled")} className="text-xs"><XCircle className="w-3 h-3 mr-1" />Annuler</Button>}
+                    {n.status !== "active" && <Button variant="gold" size="sm" onClick={() => updateNeedStatus(n.id, "active")} className="text-xs"><Power className="w-3 h-3 mr-1" />Activer</Button>}
+                    <Button variant="destructive" size="sm" onClick={() => updateNeedStatus(n.id, "deleted")} className="text-xs"><Trash2 className="w-3 h-3 mr-1" />Supprimer</Button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -241,7 +312,10 @@ const AdminDashboard = () => {
               {allResidences.map(r => (
                 <div key={r.id} className="p-4 rounded-xl bg-card border border-border">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-semibold text-foreground font-body">{r.name}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-foreground font-body">{r.name}</span>
+                      <span className="px-2 py-0.5 rounded-full text-xs bg-primary/10 text-primary font-body capitalize">{r.room_standard}</span>
+                    </div>
                     <span className="text-xs text-primary font-body">{r.min_price} FCFA</span>
                   </div>
                   <p className="text-xs text-muted-foreground font-body">{r.neighborhood}, {r.city} · {r.type} · {r.capacity} pers.</p>
@@ -263,6 +337,15 @@ const AdminDashboard = () => {
                     <span className="text-sm font-bold text-foreground font-body">{o.amount} FCFA</span>
                   </div>
                   <p className="text-xs text-muted-foreground font-body mt-1">Paiement: {o.payment_method} · {new Date(o.created_at).toLocaleString("fr-FR")}</p>
+                  <div className="flex gap-2 mt-2">
+                    {o.status === "pending" && (
+                      <>
+                        <Button variant="gold" size="sm" onClick={() => updateOrderStatus(o.id, "accepted")} className="text-xs"><Check className="w-3 h-3 mr-1" />Accepter</Button>
+                        <Button variant="destructive" size="sm" onClick={() => updateOrderStatus(o.id, "refused")} className="text-xs"><XCircle className="w-3 h-3 mr-1" />Refuser</Button>
+                      </>
+                    )}
+                    {o.status !== "cancelled" && <Button variant="outline" size="sm" onClick={() => updateOrderStatus(o.id, "cancelled")} className="text-xs">Annuler</Button>}
+                  </div>
                 </div>
               ))}
             </div>
@@ -285,6 +368,7 @@ const AdminDashboard = () => {
                   </div>
                   {tx.description && <p className="text-xs text-muted-foreground font-body">{tx.description}</p>}
                   {tx.transaction_id_external && <p className="text-xs text-muted-foreground font-body">ID: {tx.transaction_id_external}</p>}
+                  {tx.withdrawal_method && <p className="text-xs text-muted-foreground font-body">Retrait: {tx.withdrawal_method} — {tx.withdrawal_contact}</p>}
                   <p className="text-xs text-muted-foreground font-body mt-1">{new Date(tx.created_at).toLocaleString("fr-FR")}</p>
                   {tx.status === "pending" && (
                     <div className="flex gap-2 mt-2">
@@ -369,6 +453,29 @@ const AdminDashboard = () => {
               <Button variant="gold" size="sm" onClick={assignRole}>Assigner</Button>
             </div>
 
+            {/* City Manager Assignment */}
+            <div className="p-4 rounded-xl bg-card border border-border space-y-3 mb-6">
+              <h3 className="font-heading font-semibold text-foreground flex items-center gap-2"><MapPin className="w-4 h-4 text-primary" /> Assigner un Chef de ville</h3>
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <Label className="font-body">Utilisateur</Label>
+                  <select value={cityManagerAssign.userId} onChange={e => setCityManagerAssign({ ...cityManagerAssign, userId: e.target.value })} className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground font-body">
+                    <option value="">Sélectionner...</option>
+                    {allProfiles.map(p => <option key={p.id} value={p.id}>{p.full_name || p.moissonneur_code}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <Label className="font-body">Pays</Label>
+                  <Input value={cityManagerAssign.country} onChange={e => setCityManagerAssign({ ...cityManagerAssign, country: e.target.value })} className="mt-1" />
+                </div>
+                <div>
+                  <Label className="font-body">Ville</Label>
+                  <Input value={cityManagerAssign.city} onChange={e => setCityManagerAssign({ ...cityManagerAssign, city: e.target.value })} className="mt-1" placeholder="Douala" />
+                </div>
+              </div>
+              <Button variant="gold" size="sm" onClick={assignCityManager}>Assigner Chef de ville</Button>
+            </div>
+
             <h3 className="font-heading font-semibold text-foreground mb-3">Rôles attribués</h3>
             <div className="grid gap-3">
               {userRoles.map(ur => {
@@ -384,6 +491,35 @@ const AdminDashboard = () => {
                 );
               })}
               {userRoles.length === 0 && <p className="text-sm text-muted-foreground font-body">Aucun rôle assigné.</p>}
+            </div>
+          </div>
+        )}
+
+        {/* SETTINGS TAB */}
+        {activeTab === "settings" && (
+          <div>
+            <h2 className="text-xl font-heading font-bold text-foreground mb-4">Paramètres de la plateforme</h2>
+            <div className="grid gap-4">
+              {platformSettings.map(s => (
+                <div key={s.id} className="p-4 rounded-xl bg-card border border-border">
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <p className="text-sm font-semibold text-foreground font-body">{s.description || s.key}</p>
+                      <p className="text-xs text-muted-foreground font-body">{s.key}</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <Input
+                      defaultValue={s.value}
+                      onBlur={(e) => {
+                        if (e.target.value !== s.value) updateSetting(s.key, e.target.value);
+                      }}
+                      className="max-w-xs"
+                    />
+                    <span className="text-xs text-muted-foreground font-body">Actuel: {s.value}</span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}

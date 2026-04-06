@@ -13,6 +13,9 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [role, setRole] = useState<"client" | "host">("client");
+  const [country, setCountry] = useState("Cameroun");
+  const [city, setCity] = useState("");
+  const [referralCode, setReferralCode] = useState(searchParams.get("ref") || "");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -46,11 +49,16 @@ const Auth = () => {
 
     try {
       if (isSignUp) {
+        if (!city.trim()) {
+          toast({ title: "Erreur", description: "La ville est obligatoire.", variant: "destructive" });
+          setLoading(false);
+          return;
+        }
         const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            data: { full_name: fullName, role },
+            data: { full_name: fullName, role, country, city, referral_code: referralCode || undefined },
             emailRedirectTo: window.location.origin,
           },
         });
@@ -90,6 +98,20 @@ const Auth = () => {
                   <Button type="button" variant={role === "client" ? "gold" : "outline"} size="sm" onClick={() => setRole("client")}>Client</Button>
                   <Button type="button" variant={role === "host" ? "gold" : "outline"} size="sm" onClick={() => setRole("host")}>Hôte / Hôtel</Button>
                 </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="font-body">Pays</Label>
+                  <Input value={country} onChange={(e) => setCountry(e.target.value)} required className="mt-1" />
+                </div>
+                <div>
+                  <Label className="font-body">Ville *</Label>
+                  <Input value={city} onChange={(e) => setCity(e.target.value)} required className="mt-1" placeholder="Douala" />
+                </div>
+              </div>
+              <div>
+                <Label className="font-body">Code de parrainage (optionnel)</Label>
+                <Input value={referralCode} onChange={(e) => setReferralCode(e.target.value)} className="mt-1" placeholder="MSN123456" />
               </div>
             </>
           )}

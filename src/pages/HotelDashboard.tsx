@@ -32,7 +32,7 @@ const HotelDashboard = () => {
     min_price: 0, description: "", amenities: [] as string[],
     country: "Cameroun", city: "", neighborhood: "",
     gps_lat: null as number | null, gps_lng: null as number | null,
-    whatsapp_contact: "", facebook_url: "",
+    whatsapp_contact: "", facebook_url: "", room_standard: "standard",
   });
   const [newImages, setNewImages] = useState<File[]>([]);
 
@@ -40,7 +40,8 @@ const HotelDashboard = () => {
   const { toast } = useToast();
 
   const amenityOptions = ["WiFi", "Climatisation", "Parking", "Cuisine équipée", "Piscine", "Terrasse", "Lave-linge", "TV"];
-  const typeOptions = ["appartement", "chambre", "studio", "villa", "maison", "hôtel"];
+  const typeOptions = ["appartement", "chambre", "studio", "villa", "maison", "hôtel", "2 pièces", "3 pièces"];
+  const standardOptions = ["standard", "économique", "confort", "premium", "luxe"];
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
@@ -149,7 +150,7 @@ const HotelDashboard = () => {
       amenities: form.amenities, country: form.country, city: form.city,
       neighborhood: form.neighborhood, gps_lat: form.gps_lat, gps_lng: form.gps_lng,
       whatsapp_contact: form.whatsapp_contact, facebook_url: form.facebook_url,
-      host_id: user.id,
+      room_standard: form.room_standard, host_id: user.id,
     };
 
     let residenceId = editingId;
@@ -187,7 +188,7 @@ const HotelDashboard = () => {
   };
 
   const resetForm = () => {
-    setForm({ name: "", address: "", type: "appartement", capacity: 2, bedrooms: 1, min_price: 0, description: "", amenities: [], country: "Cameroun", city: "", neighborhood: "", gps_lat: null, gps_lng: null, whatsapp_contact: "", facebook_url: "" });
+    setForm({ name: "", address: "", type: "appartement", capacity: 2, bedrooms: 1, min_price: 0, description: "", amenities: [], country: "Cameroun", city: "", neighborhood: "", gps_lat: null, gps_lng: null, whatsapp_contact: "", facebook_url: "", room_standard: "standard" });
     setNewImages([]);
     setShowForm(false);
     setEditingId(null);
@@ -199,7 +200,7 @@ const HotelDashboard = () => {
       min_price: r.min_price, description: r.description || "", amenities: r.amenities || [],
       country: r.country || "Cameroun", city: r.city || "", neighborhood: r.neighborhood || "",
       gps_lat: r.gps_lat, gps_lng: r.gps_lng, whatsapp_contact: r.whatsapp_contact || "",
-      facebook_url: r.facebook_url || "",
+      facebook_url: r.facebook_url || "", room_standard: r.room_standard || "standard",
     });
     setEditingId(r.id);
     setShowForm(true);
@@ -453,6 +454,13 @@ const HotelDashboard = () => {
                         </select>
                       </div>
                       <div><Label className="font-body">Prix min (FCFA)</Label><Input type="number" value={form.min_price} onChange={e => setForm({ ...form, min_price: Number(e.target.value) })} min={0} className="mt-1" /></div>
+                    </div>
+
+                    <div>
+                      <Label className="font-body">Standard de chambre</Label>
+                      <select value={form.room_standard} onChange={e => setForm({ ...form, room_standard: e.target.value })} className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground font-body">
+                        {standardOptions.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
+                      </select>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
