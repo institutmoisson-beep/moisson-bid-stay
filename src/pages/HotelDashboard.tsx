@@ -150,7 +150,7 @@ const HotelDashboard = () => {
       amenities: form.amenities, country: form.country, city: form.city,
       neighborhood: form.neighborhood, gps_lat: form.gps_lat, gps_lng: form.gps_lng,
       whatsapp_contact: form.whatsapp_contact, facebook_url: form.facebook_url,
-      host_id: user.id,
+      room_standard: form.room_standard, host_id: user.id,
     };
 
     let residenceId = editingId;
