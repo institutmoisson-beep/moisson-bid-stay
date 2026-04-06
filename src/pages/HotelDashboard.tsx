@@ -188,7 +188,7 @@ const HotelDashboard = () => {
   };
 
   const resetForm = () => {
-    setForm({ name: "", address: "", type: "appartement", capacity: 2, bedrooms: 1, min_price: 0, description: "", amenities: [], country: "Cameroun", city: "", neighborhood: "", gps_lat: null, gps_lng: null, whatsapp_contact: "", facebook_url: "" });
+    setForm({ name: "", address: "", type: "appartement", capacity: 2, bedrooms: 1, min_price: 0, description: "", amenities: [], country: "Cameroun", city: "", neighborhood: "", gps_lat: null, gps_lng: null, whatsapp_contact: "", facebook_url: "", room_standard: "standard" });
     setNewImages([]);
     setShowForm(false);
     setEditingId(null);
