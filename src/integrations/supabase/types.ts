@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      city_manager_zones: {
+        Row: {
+          city: string
+          country: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          city: string
+          country: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          city?: string
+          country?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       needs: {
         Row: {
           budget: number
@@ -26,6 +50,7 @@ export type Database = {
           description: string | null
           id: string
           neighborhood: string
+          room_standard: string
           status: string
           type_needed: string
           updated_at: string
@@ -43,6 +68,7 @@ export type Database = {
           description?: string | null
           id?: string
           neighborhood: string
+          room_standard?: string
           status?: string
           type_needed?: string
           updated_at?: string
@@ -60,6 +86,7 @@ export type Database = {
           description?: string | null
           id?: string
           neighborhood?: string
+          room_standard?: string
           status?: string
           type_needed?: string
           updated_at?: string
@@ -109,7 +136,10 @@ export type Database = {
       orders: {
         Row: {
           amount: number
+          booking_fee: number
+          client_confirmed: boolean
           client_id: string
+          client_rating_done: boolean
           created_at: string
           host_id: string
           host_message: string | null
@@ -122,7 +152,10 @@ export type Database = {
         }
         Insert: {
           amount?: number
+          booking_fee?: number
+          client_confirmed?: boolean
           client_id: string
+          client_rating_done?: boolean
           created_at?: string
           host_id: string
           host_message?: string | null
@@ -135,7 +168,10 @@ export type Database = {
         }
         Update: {
           amount?: number
+          booking_fee?: number
+          client_confirmed?: boolean
           client_id?: string
+          client_rating_done?: boolean
           created_at?: string
           host_id?: string
           host_message?: string | null
@@ -193,42 +229,153 @@ export type Database = {
         }
         Relationships: []
       }
+      platform_settings: {
+        Row: {
+          description: string | null
+          id: string
+          key: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          description?: string | null
+          id?: string
+          key: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          description?: string | null
+          id?: string
+          key?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
+          city: string
+          country: string
           created_at: string
           full_name: string | null
           id: string
           moissonneur_code: string
           phone: string | null
+          referral_code: string | null
+          referred_by: string | null
           role: string
+          status: string
           updated_at: string
           user_id: string
           wallet_balance: number
         }
         Insert: {
           avatar_url?: string | null
+          city?: string
+          country?: string
           created_at?: string
           full_name?: string | null
           id?: string
           moissonneur_code: string
           phone?: string | null
+          referral_code?: string | null
+          referred_by?: string | null
           role?: string
+          status?: string
           updated_at?: string
           user_id: string
           wallet_balance?: number
         }
         Update: {
           avatar_url?: string | null
+          city?: string
+          country?: string
           created_at?: string
           full_name?: string | null
           id?: string
           moissonneur_code?: string
           phone?: string | null
+          referral_code?: string | null
+          referred_by?: string | null
           role?: string
+          status?: string
           updated_at?: string
           user_id?: string
           wallet_balance?: number
+        }
+        Relationships: []
+      }
+      ratings: {
+        Row: {
+          client_id: string
+          comment: string | null
+          created_at: string
+          host_id: string
+          id: string
+          order_id: string
+          rating_accueil: number
+          rating_hotel: number
+          rating_restauration: number
+          residence_id: string
+        }
+        Insert: {
+          client_id: string
+          comment?: string | null
+          created_at?: string
+          host_id: string
+          id?: string
+          order_id: string
+          rating_accueil: number
+          rating_hotel: number
+          rating_restauration: number
+          residence_id: string
+        }
+        Update: {
+          client_id?: string
+          comment?: string | null
+          created_at?: string
+          host_id?: string
+          id?: string
+          order_id?: string
+          rating_accueil?: number
+          rating_hotel?: number
+          rating_restauration?: number
+          residence_id?: string
+        }
+        Relationships: []
+      }
+      referral_commissions: {
+        Row: {
+          amount: number
+          beneficiary_id: string
+          created_at: string
+          id: string
+          level: number
+          order_id: string | null
+          source_user_id: string
+          status: string
+        }
+        Insert: {
+          amount?: number
+          beneficiary_id: string
+          created_at?: string
+          id?: string
+          level: number
+          order_id?: string | null
+          source_user_id: string
+          status?: string
+        }
+        Update: {
+          amount?: number
+          beneficiary_id?: string
+          created_at?: string
+          id?: string
+          level?: number
+          order_id?: string | null
+          source_user_id?: string
+          status?: string
         }
         Relationships: []
       }
@@ -283,6 +430,7 @@ export type Database = {
           min_price: number
           name: string
           neighborhood: string
+          room_standard: string
           type: string
           updated_at: string
           whatsapp_contact: string
@@ -305,6 +453,7 @@ export type Database = {
           min_price?: number
           name: string
           neighborhood?: string
+          room_standard?: string
           type?: string
           updated_at?: string
           whatsapp_contact?: string
@@ -327,6 +476,7 @@ export type Database = {
           min_price?: number
           name?: string
           neighborhood?: string
+          room_standard?: string
           type?: string
           updated_at?: string
           whatsapp_contact?: string
@@ -446,6 +596,7 @@ export type Database = {
         | "commercial"
         | "communication"
         | "it_manager"
+        | "city_manager"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -584,6 +735,7 @@ export const Constants = {
         "commercial",
         "communication",
         "it_manager",
+        "city_manager",
       ],
     },
   },
