@@ -10,6 +10,7 @@ import HotelDashboard from "./pages/HotelDashboard.tsx";
 import PublicNeeds from "./pages/PublicNeeds.tsx";
 import StandPage from "./pages/StandPage.tsx";
 import AdminDashboard from "./pages/AdminDashboard.tsx";
+import CityManagerDashboard from "./pages/CityManagerDashboard.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
