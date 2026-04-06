@@ -456,6 +456,13 @@ const HotelDashboard = () => {
                       <div><Label className="font-body">Prix min (FCFA)</Label><Input type="number" value={form.min_price} onChange={e => setForm({ ...form, min_price: Number(e.target.value) })} min={0} className="mt-1" /></div>
                     </div>
 
+                    <div>
+                      <Label className="font-body">Standard de chambre</Label>
+                      <select value={form.room_standard} onChange={e => setForm({ ...form, room_standard: e.target.value })} className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground font-body">
+                        {standardOptions.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
+                      </select>
+                    </div>
+
                     <div className="grid grid-cols-2 gap-4">
                       <div><Label className="font-body">Capacité</Label><Input type="number" value={form.capacity} onChange={e => setForm({ ...form, capacity: Number(e.target.value) })} min={1} className="mt-1" /></div>
                       <div><Label className="font-body">Chambres</Label><Input type="number" value={form.bedrooms} onChange={e => setForm({ ...form, bedrooms: Number(e.target.value) })} min={0} className="mt-1" /></div>
