@@ -32,7 +32,7 @@ const HotelDashboard = () => {
     min_price: 0, description: "", amenities: [] as string[],
     country: "Cameroun", city: "", neighborhood: "",
     gps_lat: null as number | null, gps_lng: null as number | null,
-    whatsapp_contact: "", facebook_url: "",
+    whatsapp_contact: "", facebook_url: "", room_standard: "standard",
   });
   const [newImages, setNewImages] = useState<File[]>([]);
 
