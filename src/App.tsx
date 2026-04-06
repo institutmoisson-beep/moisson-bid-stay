@@ -29,6 +29,7 @@ const App = () => (
           <Route path="/besoins" element={<PublicNeeds />} />
           <Route path="/stand/:code" element={<StandPage />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/city-manager" element={<CityManagerDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
