@@ -40,7 +40,8 @@ const HotelDashboard = () => {
   const { toast } = useToast();
 
   const amenityOptions = ["WiFi", "Climatisation", "Parking", "Cuisine équipée", "Piscine", "Terrasse", "Lave-linge", "TV"];
-  const typeOptions = ["appartement", "chambre", "studio", "villa", "maison", "hôtel"];
+  const typeOptions = ["appartement", "chambre", "studio", "villa", "maison", "hôtel", "2 pièces", "3 pièces"];
+  const standardOptions = ["standard", "économique", "confort", "premium", "luxe"];
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
