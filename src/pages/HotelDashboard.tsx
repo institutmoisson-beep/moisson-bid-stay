@@ -200,7 +200,7 @@ const HotelDashboard = () => {
       min_price: r.min_price, description: r.description || "", amenities: r.amenities || [],
       country: r.country || "Cameroun", city: r.city || "", neighborhood: r.neighborhood || "",
       gps_lat: r.gps_lat, gps_lng: r.gps_lng, whatsapp_contact: r.whatsapp_contact || "",
-      facebook_url: r.facebook_url || "",
+      facebook_url: r.facebook_url || "", room_standard: r.room_standard || "standard",
     });
     setEditingId(r.id);
     setShowForm(true);
