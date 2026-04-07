@@ -402,8 +402,9 @@ const ClientWallet = ({ user, profile }: { user: any; profile: any }) => {
         <h1 className="text-2xl font-heading font-bold text-foreground">Portefeuille</h1>
         <div className="text-right">
           <p className="text-sm text-muted-foreground font-body">Solde</p>
-          <p className="text-2xl font-bold text-primary font-heading">{profile?.wallet_balance || 0} FCFA</p>
+          <p className="text-2xl font-bold text-primary font-heading">{formatAmount(profile?.wallet_balance || 0, profile?.currency || 'XAF')}</p>
         </div>
+        <CurrencySelector userId={user.id} currentCurrency={profile?.currency || 'XAF'} onCurrencyChange={() => {}} compact />
       </div>
       <div className="flex gap-2 mb-6 flex-wrap">
         {[{ k: "history", l: "Historique" }, { k: "recharge", l: "Recharger" }, { k: "transfer", l: "Transférer" }, { k: "withdraw", l: "Retirer" }].map(t => (
