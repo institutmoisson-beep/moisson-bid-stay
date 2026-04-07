@@ -138,7 +138,6 @@ const ClientDashboard = () => {
               <div className="mt-4 pt-4 border-t border-border">
                 <CurrencySelector userId={user.id} currentCurrency={profile.currency || 'XAF'} onCurrencyChange={(c) => setProfile({...profile, currency: c})} />
               </div>
-              </div>
             </div>
             <div className="p-6 rounded-xl bg-card border border-border shadow-card">
               <h2 className="text-lg font-heading font-semibold text-foreground mb-4">Modifier le mot de passe</h2>
