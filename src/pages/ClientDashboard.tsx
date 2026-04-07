@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, LogOut, User, List, X, Phone, Wallet, ShieldCheck, Users, Star, Home } from "lucide-react";
+import CurrencySelector from "@/components/CurrencySelector";
+import { getCurrencySymbol, formatAmount, fetchAndRefreshRates } from "@/lib/currencies";
 
 const ClientDashboard = () => {
   const [user, setUser] = useState<any>(null);
