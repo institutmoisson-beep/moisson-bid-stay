@@ -38,6 +38,30 @@ export type Database = {
         }
         Relationships: []
       }
+      exchange_rates: {
+        Row: {
+          base_currency: string
+          id: string
+          rate: number
+          target_currency: string
+          updated_at: string
+        }
+        Insert: {
+          base_currency: string
+          id?: string
+          rate: number
+          target_currency: string
+          updated_at?: string
+        }
+        Update: {
+          base_currency?: string
+          id?: string
+          rate?: number
+          target_currency?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       needs: {
         Row: {
           budget: number
@@ -259,6 +283,7 @@ export type Database = {
           city: string
           country: string
           created_at: string
+          currency: string
           full_name: string | null
           id: string
           moissonneur_code: string
@@ -276,6 +301,7 @@ export type Database = {
           city?: string
           country?: string
           created_at?: string
+          currency?: string
           full_name?: string | null
           id?: string
           moissonneur_code: string
@@ -293,6 +319,7 @@ export type Database = {
           city?: string
           country?: string
           created_at?: string
+          currency?: string
           full_name?: string | null
           id?: string
           moissonneur_code?: string

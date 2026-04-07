@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, LogOut, User, List, X, Phone, Wallet, ShieldCheck, Users, Star, Home } from "lucide-react";
+import CurrencySelector from "@/components/CurrencySelector";
+import { getCurrencySymbol, formatAmount, fetchAndRefreshRates } from "@/lib/currencies";
 
 const ClientDashboard = () => {
   const [user, setUser] = useState<any>(null);
@@ -127,11 +129,14 @@ const ClientDashboard = () => {
                 <div><Label className="text-muted-foreground text-xs">Nom</Label><p className="text-foreground font-body">{profile.full_name || "—"}</p></div>
                 <div><Label className="text-muted-foreground text-xs">Email</Label><p className="text-foreground font-body">{user?.email}</p></div>
                 <div><Label className="text-muted-foreground text-xs">Code Moissonneur</Label><p className="text-primary font-bold font-body">{profile.moissonneur_code}</p></div>
-                <div><Label className="text-muted-foreground text-xs">Solde Portefeuille</Label><p className="text-primary font-bold font-body">{profile.wallet_balance} FCFA</p></div>
+                <div><Label className="text-muted-foreground text-xs">Solde Portefeuille</Label><p className="text-primary font-bold font-body">{formatAmount(profile.wallet_balance, profile.currency || 'XAF')}</p></div>
                 <div><Label className="text-muted-foreground text-xs">Rôle</Label><p className="text-foreground font-body capitalize">{profile.role}</p></div>
                 <div><Label className="text-muted-foreground text-xs">Zone</Label><p className="text-foreground font-body">{profile.city || "—"}, {profile.country || "—"}</p></div>
                 <div><Label className="text-muted-foreground text-xs">Code de parrainage</Label><p className="text-primary font-bold font-body">{profile.referral_code}</p></div>
                 <div><Label className="text-muted-foreground text-xs">Téléphone</Label><p className="text-foreground font-body">{profile.phone || "—"}</p></div>
+              </div>
+              <div className="mt-4 pt-4 border-t border-border">
+                <CurrencySelector userId={user.id} currentCurrency={profile.currency || 'XAF'} onCurrencyChange={(c) => setProfile({...profile, currency: c})} />
               </div>
             </div>
             <div className="p-6 rounded-xl bg-card border border-border shadow-card">
@@ -287,7 +292,7 @@ const ReferralSection = ({ user, profile }: { user: any; profile: any }) => {
             <p className="text-xs text-muted-foreground font-body">Filleuls directs</p>
           </div>
           <div className="text-center p-3 rounded-lg bg-secondary">
-            <p className="text-2xl font-bold text-primary font-heading">{totalCommissions} FCFA</p>
+            <p className="text-2xl font-bold text-primary font-heading">{totalCommissions} {getCurrencySymbol(profile?.currency || 'XAF')}</p>
             <p className="text-xs text-muted-foreground font-body">Commissions gagnées</p>
           </div>
         </div>
@@ -322,7 +327,7 @@ const ReferralSection = ({ user, profile }: { user: any; profile: any }) => {
                   <span className="text-sm font-semibold text-foreground font-body">Niveau {c.level}</span>
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-body ${c.status === "approved" ? "bg-green-500/20 text-green-400" : "bg-yellow-500/20 text-yellow-400"}`}>{c.status}</span>
                 </div>
-                <span className="font-bold text-primary font-body">{c.amount} FCFA</span>
+                <span className="font-bold text-primary font-body">{c.amount} {getCurrencySymbol(profile?.currency || 'XAF')}</span>
               </div>
             ))}
           </div>
@@ -397,8 +402,9 @@ const ClientWallet = ({ user, profile }: { user: any; profile: any }) => {
         <h1 className="text-2xl font-heading font-bold text-foreground">Portefeuille</h1>
         <div className="text-right">
           <p className="text-sm text-muted-foreground font-body">Solde</p>
-          <p className="text-2xl font-bold text-primary font-heading">{profile?.wallet_balance || 0} FCFA</p>
+          <p className="text-2xl font-bold text-primary font-heading">{formatAmount(profile?.wallet_balance || 0, profile?.currency || 'XAF')}</p>
         </div>
+        <CurrencySelector userId={user.id} currentCurrency={profile?.currency || 'XAF'} onCurrencyChange={() => {}} compact />
       </div>
       <div className="flex gap-2 mb-6 flex-wrap">
         {[{ k: "history", l: "Historique" }, { k: "recharge", l: "Recharger" }, { k: "transfer", l: "Transférer" }, { k: "withdraw", l: "Retirer" }].map(t => (
@@ -418,7 +424,7 @@ const ClientWallet = ({ user, profile }: { user: any; profile: any }) => {
                     </span>
                     <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-body ${tx.status === "approved" ? "bg-green-500/20 text-green-400" : tx.status === "pending" ? "bg-yellow-500/20 text-yellow-400" : "bg-destructive/20 text-destructive"}`}>{tx.status}</span>
                   </div>
-                  <span className="font-bold font-body text-foreground">{tx.amount} FCFA</span>
+                  <span className="font-bold font-body text-foreground">{formatAmount(tx.amount, profile?.currency || 'XAF')}</span>
                 </div>
                 {tx.description && <p className="text-xs text-muted-foreground font-body mt-1">{tx.description}</p>}
                 <p className="text-xs text-muted-foreground font-body mt-1">{new Date(tx.created_at).toLocaleString("fr-FR")}</p>
@@ -458,7 +464,7 @@ const ClientWallet = ({ user, profile }: { user: any; profile: any }) => {
           )}
           <form onSubmit={handleRecharge} className="space-y-4 p-6 rounded-xl bg-card border border-border shadow-card">
             <h3 className="font-heading font-semibold text-foreground">Demande de recharge</h3>
-            <div><Label className="font-body">Montant (FCFA)</Label><Input type="number" value={rechargeForm.amount} onChange={e => setRechargeForm({ ...rechargeForm, amount: Number(e.target.value) })} required min={1} className="mt-1" /></div>
+            <div><Label className="font-body">Montant ({getCurrencySymbol(profile?.currency || 'XAF')})</Label><Input type="number" value={rechargeForm.amount} onChange={e => setRechargeForm({ ...rechargeForm, amount: Number(e.target.value) })} required min={1} className="mt-1" /></div>
             {paymentMethods.length > 0 && (
               <div>
                 <Label className="font-body">Moyen de paiement utilisé</Label>
@@ -479,7 +485,7 @@ const ClientWallet = ({ user, profile }: { user: any; profile: any }) => {
         <form onSubmit={handleTransfer} className="max-w-md space-y-4 p-6 rounded-xl bg-card border border-border shadow-card">
           <h3 className="font-heading font-semibold text-foreground">Transférer</h3>
           <div><Label className="font-body">Code MSN ou email</Label><Input value={transferForm.recipient} onChange={e => setTransferForm({ ...transferForm, recipient: e.target.value })} required className="mt-1" placeholder="MSN123456 ou email" /></div>
-          <div><Label className="font-body">Montant (FCFA)</Label><Input type="number" value={transferForm.amount} onChange={e => setTransferForm({ ...transferForm, amount: Number(e.target.value) })} required min={1} className="mt-1" /></div>
+          <div><Label className="font-body">Montant ({getCurrencySymbol(profile?.currency || 'XAF')})</Label><Input type="number" value={transferForm.amount} onChange={e => setTransferForm({ ...transferForm, amount: Number(e.target.value) })} required min={1} className="mt-1" /></div>
           <Button type="submit" variant="gold" className="w-full">Transférer</Button>
         </form>
       )}
@@ -487,7 +493,7 @@ const ClientWallet = ({ user, profile }: { user: any; profile: any }) => {
       {tab === "withdraw" && (
         <form onSubmit={handleWithdraw} className="max-w-md space-y-4 p-6 rounded-xl bg-card border border-border shadow-card">
           <h3 className="font-heading font-semibold text-foreground">Demande de retrait</h3>
-          <div><Label className="font-body">Montant (FCFA)</Label><Input type="number" value={withdrawForm.amount} onChange={e => setWithdrawForm({ ...withdrawForm, amount: Number(e.target.value) })} required min={1} className="mt-1" /></div>
+          <div><Label className="font-body">Montant ({getCurrencySymbol(profile?.currency || 'XAF')})</Label><Input type="number" value={withdrawForm.amount} onChange={e => setWithdrawForm({ ...withdrawForm, amount: Number(e.target.value) })} required min={1} className="mt-1" /></div>
           <div>
             <Label className="font-body">Service de retrait</Label>
             <select value={withdrawForm.method} onChange={e => setWithdrawForm({ ...withdrawForm, method: e.target.value })} required className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground font-body">

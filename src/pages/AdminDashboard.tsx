@@ -10,6 +10,7 @@ import {
   Check, XCircle, Plus, Trash2, CreditCard, UserCog, Settings,
   Ban, Power, MapPin
 } from "lucide-react";
+import { getCurrencySymbol, formatAmount } from "@/lib/currencies";
 
 const ROLE_LABELS: Record<string, string> = {
   admin: "Administrateur",
@@ -239,7 +240,7 @@ const AdminDashboard = () => {
                   <div className="flex items-center justify-between mb-2">
                     <div>
                       <p className="text-sm font-semibold text-foreground font-body">{p.full_name || "—"}</p>
-                      <p className="text-xs text-muted-foreground font-body">{p.moissonneur_code} · {p.city}, {p.country} · Solde: {p.wallet_balance} FCFA</p>
+                       <p className="text-xs text-muted-foreground font-body">{p.moissonneur_code} · {p.city}, {p.country} · Solde: {formatAmount(p.wallet_balance, p.currency || 'XAF')}</p>
                     </div>
                     <span className={`px-2 py-0.5 rounded-full text-xs font-body ${p.status === "active" ? "bg-green-500/20 text-green-400" : p.status === "suspended" ? "bg-yellow-500/20 text-yellow-400" : "bg-destructive/20 text-destructive"}`}>{p.status || "active"}</span>
                   </div>
@@ -259,7 +260,7 @@ const AdminDashboard = () => {
                   <div className="flex items-center justify-between mb-2">
                     <div>
                       <p className="text-sm font-semibold text-foreground font-body">{p.full_name || "—"}</p>
-                      <p className="text-xs text-muted-foreground font-body">{p.moissonneur_code} · {p.city}, {p.country} · Solde: {p.wallet_balance} FCFA</p>
+                      <p className="text-xs text-muted-foreground font-body">{p.moissonneur_code} · {p.city}, {p.country} · Solde: {formatAmount(p.wallet_balance, p.currency || 'XAF')}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className={`px-2 py-0.5 rounded-full text-xs font-body ${p.status === "active" ? "bg-green-500/20 text-green-400" : p.status === "suspended" ? "bg-yellow-500/20 text-yellow-400" : "bg-destructive/20 text-destructive"}`}>{p.status || "active"}</span>
@@ -334,7 +335,7 @@ const AdminDashboard = () => {
                 <div key={o.id} className="p-4 rounded-xl bg-card border border-border">
                   <div className="flex items-center justify-between">
                     <span className={`px-2 py-0.5 rounded-full text-xs font-body ${o.status === "pending" ? "bg-yellow-500/20 text-yellow-400" : o.status === "accepted" ? "bg-green-500/20 text-green-400" : "bg-destructive/20 text-destructive"}`}>{o.status}</span>
-                    <span className="text-sm font-bold text-foreground font-body">{o.amount} FCFA</span>
+                    <span className="text-sm font-bold text-foreground font-body">{o.amount} {(() => { const p = [...clients, ...hosts].find(x => x.user_id === o.client_id); return getCurrencySymbol(p?.currency || 'XAF'); })()}</span>
                   </div>
                   <p className="text-xs text-muted-foreground font-body mt-1">Paiement: {o.payment_method} · {new Date(o.created_at).toLocaleString("fr-FR")}</p>
                   <div className="flex gap-2 mt-2">
@@ -364,7 +365,7 @@ const AdminDashboard = () => {
                       <span className="text-sm font-semibold text-foreground font-body">{tx.type}</span>
                       <span className={`px-2 py-0.5 rounded-full text-xs font-body ${tx.status === "approved" ? "bg-green-500/20 text-green-400" : tx.status === "pending" ? "bg-yellow-500/20 text-yellow-400" : "bg-destructive/20 text-destructive"}`}>{tx.status}</span>
                     </div>
-                    <span className="font-bold text-foreground font-body">{tx.amount} FCFA</span>
+                    <span className="font-bold text-foreground font-body">{tx.amount} {(() => { const p = [...clients, ...hosts].find(x => x.user_id === tx.user_id); return getCurrencySymbol(p?.currency || 'XAF'); })()}</span>
                   </div>
                   {tx.description && <p className="text-xs text-muted-foreground font-body">{tx.description}</p>}
                   {tx.transaction_id_external && <p className="text-xs text-muted-foreground font-body">ID: {tx.transaction_id_external}</p>}
