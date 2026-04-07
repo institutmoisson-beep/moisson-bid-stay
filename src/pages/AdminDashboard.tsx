@@ -10,6 +10,7 @@ import {
   Check, XCircle, Plus, Trash2, CreditCard, UserCog, Settings,
   Ban, Power, MapPin
 } from "lucide-react";
+import { getCurrencySymbol, formatAmount } from "@/lib/currencies";
 
 const ROLE_LABELS: Record<string, string> = {
   admin: "Administrateur",
