@@ -365,7 +365,7 @@ const AdminDashboard = () => {
                       <span className="text-sm font-semibold text-foreground font-body">{tx.type}</span>
                       <span className={`px-2 py-0.5 rounded-full text-xs font-body ${tx.status === "approved" ? "bg-green-500/20 text-green-400" : tx.status === "pending" ? "bg-yellow-500/20 text-yellow-400" : "bg-destructive/20 text-destructive"}`}>{tx.status}</span>
                     </div>
-                    <span className="font-bold text-foreground font-body">{tx.amount} FCFA</span>
+                    <span className="font-bold text-foreground font-body">{tx.amount} {(() => { const p = [...clients, ...hosts].find(x => x.user_id === tx.user_id); return getCurrencySymbol(p?.currency || 'XAF'); })()}</span>
                   </div>
                   {tx.description && <p className="text-xs text-muted-foreground font-body">{tx.description}</p>}
                   {tx.transaction_id_external && <p className="text-xs text-muted-foreground font-body">ID: {tx.transaction_id_external}</p>}
