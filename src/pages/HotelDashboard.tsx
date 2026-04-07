@@ -10,6 +10,8 @@ import {
   Plus, LogOut, User, Home, Bell, X, Pencil, Trash2, MapPin,
   Phone, List, Check, XCircle, Eye, Locate, Image as ImageIcon, Wallet, ShieldCheck
 } from "lucide-react";
+import CurrencySelector from "@/components/CurrencySelector";
+import { getCurrencySymbol, formatAmount } from "@/lib/currencies";
 
 const HotelDashboard = () => {
   const [user, setUser] = useState<any>(null);
