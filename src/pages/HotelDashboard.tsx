@@ -717,7 +717,7 @@ const WalletSection = ({ user, profile }: { user: any; profile: any }) => {
       {tab === "withdraw" && (
         <form onSubmit={handleWithdraw} className="max-w-md space-y-4 p-6 rounded-xl bg-card border border-border shadow-card">
           <h3 className="font-heading font-semibold text-foreground">Demande de retrait</h3>
-          <div><Label className="font-body">Montant (FCFA)</Label><Input type="number" value={withdrawForm.amount} onChange={e => setWithdrawForm({ ...withdrawForm, amount: Number(e.target.value) })} required min={1} className="mt-1" /></div>
+          <div><Label className="font-body">Montant ({getCurrencySymbol(profile?.currency || 'XAF')})</Label><Input type="number" value={withdrawForm.amount} onChange={e => setWithdrawForm({ ...withdrawForm, amount: Number(e.target.value) })} required min={1} className="mt-1" /></div>
           <div>
             <Label className="font-body">Moyen de retrait</Label>
             <select value={withdrawForm.method} onChange={e => setWithdrawForm({ ...withdrawForm, method: e.target.value })} required className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground font-body">
