@@ -292,7 +292,7 @@ const ReferralSection = ({ user, profile }: { user: any; profile: any }) => {
             <p className="text-xs text-muted-foreground font-body">Filleuls directs</p>
           </div>
           <div className="text-center p-3 rounded-lg bg-secondary">
-            <p className="text-2xl font-bold text-primary font-heading">{totalCommissions} FCFA</p>
+            <p className="text-2xl font-bold text-primary font-heading">{totalCommissions} {getCurrencySymbol(profile?.currency || 'XAF')}</p>
             <p className="text-xs text-muted-foreground font-body">Commissions gagnées</p>
           </div>
         </div>
