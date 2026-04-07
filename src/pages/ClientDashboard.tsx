@@ -327,7 +327,7 @@ const ReferralSection = ({ user, profile }: { user: any; profile: any }) => {
                   <span className="text-sm font-semibold text-foreground font-body">Niveau {c.level}</span>
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-body ${c.status === "approved" ? "bg-green-500/20 text-green-400" : "bg-yellow-500/20 text-yellow-400"}`}>{c.status}</span>
                 </div>
-                <span className="font-bold text-primary font-body">{c.amount} FCFA</span>
+                <span className="font-bold text-primary font-body">{c.amount} {getCurrencySymbol(profile?.currency || 'XAF')}</span>
               </div>
             ))}
           </div>
