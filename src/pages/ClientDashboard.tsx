@@ -104,6 +104,9 @@ const ClientDashboard = () => {
                 <t.icon className="w-4 h-4 mr-1" /><span className="hidden sm:inline">{t.label}</span>
               </Button>
             ))}
+            <Button variant="ghost" size="sm" onClick={() => navigate("/annuaire")} className="shrink-0">
+              <Home className="w-4 h-4 mr-1" /><span className="hidden sm:inline">Annuaire</span>
+            </Button>
             {isAdmin && (
               <Button variant="ghost" size="sm" onClick={() => navigate("/admin")} className="text-primary shrink-0">
                 <ShieldCheck className="w-4 h-4 mr-1" /><span className="hidden sm:inline">Admin</span>
