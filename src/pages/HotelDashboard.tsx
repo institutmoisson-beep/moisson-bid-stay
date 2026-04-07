@@ -259,7 +259,7 @@ const HotelDashboard = () => {
               { key: "annuaire", label: "Annuaire", icon: MapPin },
             ].map(tab => (
               <Button key={tab.key} variant={activeTab === tab.key ? "gold" : "ghost"} size="sm"
-                onClick={() => { setActiveTab(tab.key); if (tab.key === "notifications") markAllRead(); }}
+                onClick={() => { if (tab.key === "annuaire") { navigate("/annuaire"); return; } setActiveTab(tab.key); if (tab.key === "notifications") markAllRead(); }}
                 className="relative shrink-0">
                 <tab.icon className="w-4 h-4 mr-1" />
                 <span className="hidden sm:inline">{tab.label}</span>
