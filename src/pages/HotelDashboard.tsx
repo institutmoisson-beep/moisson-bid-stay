@@ -688,7 +688,7 @@ const WalletSection = ({ user, profile }: { user: any; profile: any }) => {
           )}
           <form onSubmit={handleRecharge} className="space-y-4 p-6 rounded-xl bg-card border border-border shadow-card">
             <h3 className="font-heading font-semibold text-foreground">Demande de recharge</h3>
-            <div><Label className="font-body">Montant (FCFA)</Label><Input type="number" value={rechargeForm.amount} onChange={e => setRechargeForm({ ...rechargeForm, amount: Number(e.target.value) })} required min={1} className="mt-1" /></div>
+            <div><Label className="font-body">Montant ({getCurrencySymbol(profile?.currency || 'XAF')})</Label><Input type="number" value={rechargeForm.amount} onChange={e => setRechargeForm({ ...rechargeForm, amount: Number(e.target.value) })} required min={1} className="mt-1" /></div>
             {paymentMethods.length > 0 && (
               <div>
                 <Label className="font-body">Moyen de paiement utilisé</Label>
