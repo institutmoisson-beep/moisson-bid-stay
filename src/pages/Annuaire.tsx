@@ -67,14 +67,20 @@ const Annuaire = () => {
     fetchAll();
   }, []);
 
+  const [countryFilter, setCountryFilter] = useState("");
+
   const filteredResidences = residences.filter((r) => {
     const matchSearch = !search || r.name.toLowerCase().includes(search.toLowerCase()) ||
       r.neighborhood.toLowerCase().includes(search.toLowerCase()) ||
+      r.city.toLowerCase().includes(search.toLowerCase()) ||
+      r.country.toLowerCase().includes(search.toLowerCase()) ||
       r.type.toLowerCase().includes(search.toLowerCase());
     const matchCity = !cityFilter || r.city.toLowerCase().includes(cityFilter.toLowerCase());
-    return matchSearch && matchCity;
+    const matchCountry = !countryFilter || r.country.toLowerCase().includes(countryFilter.toLowerCase());
+    return matchSearch && matchCity && matchCountry;
   });
 
+  const countries = [...new Set(residences.map((r) => r.country))].sort();
   const cities = [...new Set(residences.map((r) => r.city))].sort();
 
   const handleReserve = async (residence: any) => {
@@ -156,17 +162,25 @@ const Annuaire = () => {
         </div>
 
         {/* Search & filters */}
-        <div className="flex flex-col sm:flex-row gap-3 mb-8 max-w-2xl mx-auto">
+        <div className="flex flex-col sm:flex-row gap-3 mb-8 max-w-3xl mx-auto">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Rechercher un bien, quartier..."
+              placeholder="Rechercher par pays, ville, quartier..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-card border border-border text-foreground font-body text-sm focus:border-primary focus:outline-none"
             />
           </div>
+          <select
+            value={countryFilter}
+            onChange={(e) => setCountryFilter(e.target.value)}
+            className="px-4 py-2.5 rounded-lg bg-card border border-border text-foreground font-body text-sm focus:border-primary focus:outline-none"
+          >
+            <option value="">Tous les pays</option>
+            {countries.map((c) => <option key={c} value={c}>{c}</option>)}
+          </select>
           <select
             value={cityFilter}
             onChange={(e) => setCityFilter(e.target.value)}

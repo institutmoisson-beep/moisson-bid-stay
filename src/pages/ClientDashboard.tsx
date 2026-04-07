@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, LogOut, User, List, X, Phone, Wallet, ShieldCheck, Users, Star } from "lucide-react";
+import { Plus, LogOut, User, List, X, Phone, Wallet, ShieldCheck, Users, Star, Home } from "lucide-react";
 
 const ClientDashboard = () => {
   const [user, setUser] = useState<any>(null);
@@ -104,6 +104,9 @@ const ClientDashboard = () => {
                 <t.icon className="w-4 h-4 mr-1" /><span className="hidden sm:inline">{t.label}</span>
               </Button>
             ))}
+            <Button variant="ghost" size="sm" onClick={() => navigate("/annuaire")} className="shrink-0">
+              <Home className="w-4 h-4 mr-1" /><span className="hidden sm:inline">Annuaire</span>
+            </Button>
             {isAdmin && (
               <Button variant="ghost" size="sm" onClick={() => navigate("/admin")} className="text-primary shrink-0">
                 <ShieldCheck className="w-4 h-4 mr-1" /><span className="hidden sm:inline">Admin</span>
