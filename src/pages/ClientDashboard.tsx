@@ -424,7 +424,7 @@ const ClientWallet = ({ user, profile }: { user: any; profile: any }) => {
                     </span>
                     <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-body ${tx.status === "approved" ? "bg-green-500/20 text-green-400" : tx.status === "pending" ? "bg-yellow-500/20 text-yellow-400" : "bg-destructive/20 text-destructive"}`}>{tx.status}</span>
                   </div>
-                  <span className="font-bold font-body text-foreground">{tx.amount} FCFA</span>
+                  <span className="font-bold font-body text-foreground">{formatAmount(tx.amount, profile?.currency || 'XAF')}</span>
                 </div>
                 {tx.description && <p className="text-xs text-muted-foreground font-body mt-1">{tx.description}</p>}
                 <p className="text-xs text-muted-foreground font-body mt-1">{new Date(tx.created_at).toLocaleString("fr-FR")}</p>
