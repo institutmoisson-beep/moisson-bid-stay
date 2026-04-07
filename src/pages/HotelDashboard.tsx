@@ -709,7 +709,7 @@ const WalletSection = ({ user, profile }: { user: any; profile: any }) => {
         <form onSubmit={handleTransfer} className="max-w-md space-y-4 p-6 rounded-xl bg-card border border-border shadow-card">
           <h3 className="font-heading font-semibold text-foreground">Transférer</h3>
           <div><Label className="font-body">Code Moissonneur ou email du destinataire</Label><Input value={transferForm.recipient} onChange={e => setTransferForm({ ...transferForm, recipient: e.target.value })} required className="mt-1" placeholder="MSN123456 ou email@..." /></div>
-          <div><Label className="font-body">Montant (FCFA)</Label><Input type="number" value={transferForm.amount} onChange={e => setTransferForm({ ...transferForm, amount: Number(e.target.value) })} required min={1} className="mt-1" /></div>
+          <div><Label className="font-body">Montant ({getCurrencySymbol(profile?.currency || 'XAF')})</Label><Input type="number" value={transferForm.amount} onChange={e => setTransferForm({ ...transferForm, amount: Number(e.target.value) })} required min={1} className="mt-1" /></div>
           <Button type="submit" variant="gold" className="w-full">Transférer</Button>
         </form>
       )}
