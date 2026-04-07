@@ -9,6 +9,7 @@ import ClientDashboard from "./pages/ClientDashboard.tsx";
 import HotelDashboard from "./pages/HotelDashboard.tsx";
 import PublicNeeds from "./pages/PublicNeeds.tsx";
 import StandPage from "./pages/StandPage.tsx";
+import Annuaire from "./pages/Annuaire.tsx";
 import AdminDashboard from "./pages/AdminDashboard.tsx";
 import CityManagerDashboard from "./pages/CityManagerDashboard.tsx";
 import NotFound from "./pages/NotFound.tsx";
