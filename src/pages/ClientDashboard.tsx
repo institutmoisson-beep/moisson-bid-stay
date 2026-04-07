@@ -129,11 +129,15 @@ const ClientDashboard = () => {
                 <div><Label className="text-muted-foreground text-xs">Nom</Label><p className="text-foreground font-body">{profile.full_name || "—"}</p></div>
                 <div><Label className="text-muted-foreground text-xs">Email</Label><p className="text-foreground font-body">{user?.email}</p></div>
                 <div><Label className="text-muted-foreground text-xs">Code Moissonneur</Label><p className="text-primary font-bold font-body">{profile.moissonneur_code}</p></div>
-                <div><Label className="text-muted-foreground text-xs">Solde Portefeuille</Label><p className="text-primary font-bold font-body">{profile.wallet_balance} FCFA</p></div>
+                <div><Label className="text-muted-foreground text-xs">Solde Portefeuille</Label><p className="text-primary font-bold font-body">{formatAmount(profile.wallet_balance, profile.currency || 'XAF')}</p></div>
                 <div><Label className="text-muted-foreground text-xs">Rôle</Label><p className="text-foreground font-body capitalize">{profile.role}</p></div>
                 <div><Label className="text-muted-foreground text-xs">Zone</Label><p className="text-foreground font-body">{profile.city || "—"}, {profile.country || "—"}</p></div>
                 <div><Label className="text-muted-foreground text-xs">Code de parrainage</Label><p className="text-primary font-bold font-body">{profile.referral_code}</p></div>
                 <div><Label className="text-muted-foreground text-xs">Téléphone</Label><p className="text-foreground font-body">{profile.phone || "—"}</p></div>
+              </div>
+              <div className="mt-4 pt-4 border-t border-border">
+                <CurrencySelector userId={user.id} currentCurrency={profile.currency || 'XAF'} onCurrencyChange={(c) => setProfile({...profile, currency: c})} />
+              </div>
               </div>
             </div>
             <div className="p-6 rounded-xl bg-card border border-border shadow-card">
