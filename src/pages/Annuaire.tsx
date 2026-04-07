@@ -80,6 +80,7 @@ const Annuaire = () => {
     return matchSearch && matchCity && matchCountry;
   });
 
+  const countries = [...new Set(residences.map((r) => r.country))].sort();
   const cities = [...new Set(residences.map((r) => r.city))].sort();
 
   const handleReserve = async (residence: any) => {
