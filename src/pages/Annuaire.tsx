@@ -162,17 +162,25 @@ const Annuaire = () => {
         </div>
 
         {/* Search & filters */}
-        <div className="flex flex-col sm:flex-row gap-3 mb-8 max-w-2xl mx-auto">
+        <div className="flex flex-col sm:flex-row gap-3 mb-8 max-w-3xl mx-auto">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Rechercher un bien, quartier..."
+              placeholder="Rechercher par pays, ville, quartier..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-card border border-border text-foreground font-body text-sm focus:border-primary focus:outline-none"
             />
           </div>
+          <select
+            value={countryFilter}
+            onChange={(e) => setCountryFilter(e.target.value)}
+            className="px-4 py-2.5 rounded-lg bg-card border border-border text-foreground font-body text-sm focus:border-primary focus:outline-none"
+          >
+            <option value="">Tous les pays</option>
+            {countries.map((c) => <option key={c} value={c}>{c}</option>)}
+          </select>
           <select
             value={cityFilter}
             onChange={(e) => setCityFilter(e.target.value)}
