@@ -633,7 +633,7 @@ const WalletSection = ({ user, profile }: { user: any; profile: any }) => {
         <h1 className="text-2xl font-heading font-bold text-foreground">Portefeuille</h1>
         <div className="text-right">
           <p className="text-sm text-muted-foreground font-body">Solde disponible</p>
-          <p className="text-2xl font-bold text-primary font-heading">{profile?.wallet_balance || 0} FCFA</p>
+          <p className="text-2xl font-bold text-primary font-heading">{formatAmount(profile?.wallet_balance || 0, profile?.currency || 'XAF')}</p>
         </div>
       </div>
 
