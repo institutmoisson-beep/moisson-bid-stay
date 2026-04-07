@@ -335,7 +335,7 @@ const AdminDashboard = () => {
                 <div key={o.id} className="p-4 rounded-xl bg-card border border-border">
                   <div className="flex items-center justify-between">
                     <span className={`px-2 py-0.5 rounded-full text-xs font-body ${o.status === "pending" ? "bg-yellow-500/20 text-yellow-400" : o.status === "accepted" ? "bg-green-500/20 text-green-400" : "bg-destructive/20 text-destructive"}`}>{o.status}</span>
-                    <span className="text-sm font-bold text-foreground font-body">{o.amount} FCFA</span>
+                    <span className="text-sm font-bold text-foreground font-body">{o.amount} {(() => { const p = [...clients, ...hosts].find(x => x.user_id === o.client_id); return getCurrencySymbol(p?.currency || 'XAF'); })()}</span>
                   </div>
                   <p className="text-xs text-muted-foreground font-body mt-1">Paiement: {o.payment_method} · {new Date(o.created_at).toLocaleString("fr-FR")}</p>
                   <div className="flex gap-2 mt-2">
