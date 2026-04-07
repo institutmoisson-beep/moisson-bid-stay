@@ -260,7 +260,7 @@ const AdminDashboard = () => {
                   <div className="flex items-center justify-between mb-2">
                     <div>
                       <p className="text-sm font-semibold text-foreground font-body">{p.full_name || "—"}</p>
-                      <p className="text-xs text-muted-foreground font-body">{p.moissonneur_code} · {p.city}, {p.country} · Solde: {p.wallet_balance} FCFA</p>
+                      <p className="text-xs text-muted-foreground font-body">{p.moissonneur_code} · {p.city}, {p.country} · Solde: {formatAmount(p.wallet_balance, p.currency || 'XAF')}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className={`px-2 py-0.5 rounded-full text-xs font-body ${p.status === "active" ? "bg-green-500/20 text-green-400" : p.status === "suspended" ? "bg-yellow-500/20 text-yellow-400" : "bg-destructive/20 text-destructive"}`}>{p.status || "active"}</span>
