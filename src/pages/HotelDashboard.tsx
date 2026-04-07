@@ -256,6 +256,7 @@ const HotelDashboard = () => {
               { key: "notifications", label: "Notifs", icon: Bell, badge: unreadCount },
               { key: "wallet", label: "Wallet", icon: Wallet },
               { key: "profile", label: "Profil", icon: User },
+              { key: "annuaire", label: "Annuaire", icon: MapPin },
             ].map(tab => (
               <Button key={tab.key} variant={activeTab === tab.key ? "gold" : "ghost"} size="sm"
                 onClick={() => { setActiveTab(tab.key); if (tab.key === "notifications") markAllRead(); }}

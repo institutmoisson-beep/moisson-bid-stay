@@ -67,12 +67,17 @@ const Annuaire = () => {
     fetchAll();
   }, []);
 
+  const [countryFilter, setCountryFilter] = useState("");
+
   const filteredResidences = residences.filter((r) => {
     const matchSearch = !search || r.name.toLowerCase().includes(search.toLowerCase()) ||
       r.neighborhood.toLowerCase().includes(search.toLowerCase()) ||
+      r.city.toLowerCase().includes(search.toLowerCase()) ||
+      r.country.toLowerCase().includes(search.toLowerCase()) ||
       r.type.toLowerCase().includes(search.toLowerCase());
     const matchCity = !cityFilter || r.city.toLowerCase().includes(cityFilter.toLowerCase());
-    return matchSearch && matchCity;
+    const matchCountry = !countryFilter || r.country.toLowerCase().includes(countryFilter.toLowerCase());
+    return matchSearch && matchCity && matchCountry;
   });
 
   const cities = [...new Set(residences.map((r) => r.city))].sort();
