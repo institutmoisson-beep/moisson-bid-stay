@@ -45,6 +45,11 @@ const AdminDashboard = () => {
   const [showPmForm, setShowPmForm] = useState(false);
   const [roleAssign, setRoleAssign] = useState({ userId: "", role: "financier" });
   const [cityManagerAssign, setCityManagerAssign] = useState({ userId: "", country: "Cameroun", city: "" });
+  const [usersOpen, setUsersOpen] = useState(true);
+  const [hostsOpen, setHostsOpen] = useState(true);
+  const [searchUsers, setSearchUsers] = useState("");
+  const [searchTransactions, setSearchTransactions] = useState("");
+  const [searchRoles, setSearchRoles] = useState("");
 
   const navigate = useNavigate();
   const { toast } = useToast();
