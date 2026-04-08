@@ -382,8 +382,12 @@ const AdminDashboard = () => {
         {activeTab === "transactions" && (
           <div>
             <h2 className="text-xl font-heading font-bold text-foreground mb-4">Transactions ({allTransactions.length})</h2>
+            <div className="relative mb-4">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input placeholder="Rechercher par type, statut, description..." value={searchTransactions} onChange={e => setSearchTransactions(e.target.value)} className="pl-9" />
+            </div>
             <div className="grid gap-3">
-              {allTransactions.map(tx => (
+              {allTransactions.filter(tx => { const s = searchTransactions.toLowerCase(); if (!s) return true; const profile = [...clients, ...hosts].find(x => x.user_id === tx.user_id); return tx.type.toLowerCase().includes(s) || tx.status.toLowerCase().includes(s) || (tx.description||'').toLowerCase().includes(s) || (tx.recipient_code||'').toLowerCase().includes(s) || (profile?.full_name||'').toLowerCase().includes(s) || (profile?.moissonneur_code||'').toLowerCase().includes(s); }).map(tx => (
                 <div key={tx.id} className="p-4 rounded-xl bg-card border border-border">
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-2">
