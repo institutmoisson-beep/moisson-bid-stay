@@ -8,8 +8,9 @@ import { useToast } from "@/hooks/use-toast";
 import {
   Users, Home, List, ArrowLeft, ShieldCheck, Wallet, Eye,
   Check, XCircle, Plus, Trash2, CreditCard, UserCog, Settings,
-  Ban, Power, MapPin
+  Ban, Power, MapPin, ChevronDown, ChevronRight, Search
 } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { getCurrencySymbol, formatAmount } from "@/lib/currencies";
 
 const ROLE_LABELS: Record<string, string> = {
