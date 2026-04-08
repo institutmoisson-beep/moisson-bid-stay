@@ -507,8 +507,12 @@ const AdminDashboard = () => {
             </div>
 
             <h3 className="font-heading font-semibold text-foreground mb-3">Rôles attribués</h3>
+            <div className="relative mb-4">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input placeholder="Rechercher par nom, code, rôle..." value={searchRoles} onChange={e => setSearchRoles(e.target.value)} className="pl-9" />
+            </div>
             <div className="grid gap-3">
-              {userRoles.map(ur => {
+              {userRoles.filter(ur => { const s = searchRoles.toLowerCase(); if (!s) return true; const profile = allProfiles.find(p => p.user_id === ur.user_id); return (profile?.full_name||'').toLowerCase().includes(s) || (profile?.moissonneur_code||'').toLowerCase().includes(s) || (ROLE_LABELS[ur.role]||ur.role).toLowerCase().includes(s); }).map(ur => {
                 const profile = allProfiles.find(p => p.user_id === ur.user_id);
                 return (
                   <div key={ur.id} className="p-4 rounded-xl bg-card border border-border flex items-center justify-between">
