@@ -8,8 +8,9 @@ import { useToast } from "@/hooks/use-toast";
 import {
   Users, Home, List, ArrowLeft, ShieldCheck, Wallet, Eye,
   Check, XCircle, Plus, Trash2, CreditCard, UserCog, Settings,
-  Ban, Power, MapPin
+  Ban, Power, MapPin, ChevronDown, ChevronRight, Search
 } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { getCurrencySymbol, formatAmount } from "@/lib/currencies";
 
 const ROLE_LABELS: Record<string, string> = {
@@ -44,6 +45,11 @@ const AdminDashboard = () => {
   const [showPmForm, setShowPmForm] = useState(false);
   const [roleAssign, setRoleAssign] = useState({ userId: "", role: "financier" });
   const [cityManagerAssign, setCityManagerAssign] = useState({ userId: "", country: "Cameroun", city: "" });
+  const [usersOpen, setUsersOpen] = useState(true);
+  const [hostsOpen, setHostsOpen] = useState(true);
+  const [searchUsers, setSearchUsers] = useState("");
+  const [searchTransactions, setSearchTransactions] = useState("");
+  const [searchRoles, setSearchRoles] = useState("");
 
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -232,49 +238,68 @@ const AdminDashboard = () => {
 
         {/* USERS TAB */}
         {activeTab === "users" && (
-          <div className="space-y-6">
-            <h2 className="text-xl font-heading font-bold text-foreground">Clients ({clients.length})</h2>
-            <div className="grid gap-3">
-              {clients.map(p => (
-                <div key={p.id} className="p-4 rounded-xl bg-card border border-border">
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <p className="text-sm font-semibold text-foreground font-body">{p.full_name || "—"}</p>
-                       <p className="text-xs text-muted-foreground font-body">{p.moissonneur_code} · {p.city}, {p.country} · Solde: {formatAmount(p.wallet_balance, p.currency || 'XAF')}</p>
-                    </div>
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-body ${p.status === "active" ? "bg-green-500/20 text-green-400" : p.status === "suspended" ? "bg-yellow-500/20 text-yellow-400" : "bg-destructive/20 text-destructive"}`}>{p.status || "active"}</span>
-                  </div>
-                  <div className="flex gap-2">
-                    {p.status !== "suspended" && <Button variant="outline" size="sm" onClick={() => updateUserStatus(p.user_id, "suspended")} className="text-xs"><Ban className="w-3 h-3 mr-1" />Suspendre</Button>}
-                    {p.status === "suspended" && <Button variant="gold" size="sm" onClick={() => updateUserStatus(p.user_id, "active")} className="text-xs"><Power className="w-3 h-3 mr-1" />Activer</Button>}
-                    <Button variant="destructive" size="sm" onClick={() => updateUserStatus(p.user_id, "deleted")} className="text-xs"><Trash2 className="w-3 h-3 mr-1" />Supprimer</Button>
-                  </div>
-                </div>
-              ))}
+          <div className="space-y-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input placeholder="Rechercher par nom, code, ville..." value={searchUsers} onChange={e => setSearchUsers(e.target.value)} className="pl-9" />
             </div>
 
-            <h2 className="text-xl font-heading font-bold text-foreground mt-8">Hôtels ({hosts.length})</h2>
-            <div className="grid gap-3">
-              {hosts.map(p => (
-                <div key={p.id} className="p-4 rounded-xl bg-card border border-border">
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <p className="text-sm font-semibold text-foreground font-body">{p.full_name || "—"}</p>
-                      <p className="text-xs text-muted-foreground font-body">{p.moissonneur_code} · {p.city}, {p.country} · Solde: {formatAmount(p.wallet_balance, p.currency || 'XAF')}</p>
+            <Collapsible open={usersOpen} onOpenChange={setUsersOpen}>
+              <CollapsibleTrigger className="flex items-center gap-2 w-full text-left py-2">
+                {usersOpen ? <ChevronDown className="w-5 h-5 text-primary" /> : <ChevronRight className="w-5 h-5 text-primary" />}
+                <h2 className="text-xl font-heading font-bold text-foreground">Clients ({clients.filter(p => { const s = searchUsers.toLowerCase(); return !s || (p.full_name||'').toLowerCase().includes(s) || p.moissonneur_code.toLowerCase().includes(s) || p.city.toLowerCase().includes(s) || p.country.toLowerCase().includes(s); }).length})</h2>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="grid gap-3 mt-2">
+                  {clients.filter(p => { const s = searchUsers.toLowerCase(); return !s || (p.full_name||'').toLowerCase().includes(s) || p.moissonneur_code.toLowerCase().includes(s) || p.city.toLowerCase().includes(s) || p.country.toLowerCase().includes(s); }).map(p => (
+                    <div key={p.id} className="p-4 rounded-xl bg-card border border-border">
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <p className="text-sm font-semibold text-foreground font-body">{p.full_name || "—"}</p>
+                          <p className="text-xs text-muted-foreground font-body">{p.moissonneur_code} · {p.city}, {p.country} · Solde: {formatAmount(p.wallet_balance, p.currency || 'XAF')}</p>
+                        </div>
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-body ${p.status === "active" ? "bg-green-500/20 text-green-400" : p.status === "suspended" ? "bg-yellow-500/20 text-yellow-400" : "bg-destructive/20 text-destructive"}`}>{p.status || "active"}</span>
+                      </div>
+                      <div className="flex gap-2">
+                        {p.status !== "suspended" && <Button variant="outline" size="sm" onClick={() => updateUserStatus(p.user_id, "suspended")} className="text-xs"><Ban className="w-3 h-3 mr-1" />Suspendre</Button>}
+                        {p.status === "suspended" && <Button variant="gold" size="sm" onClick={() => updateUserStatus(p.user_id, "active")} className="text-xs"><Power className="w-3 h-3 mr-1" />Activer</Button>}
+                        <Button variant="destructive" size="sm" onClick={() => updateUserStatus(p.user_id, "deleted")} className="text-xs"><Trash2 className="w-3 h-3 mr-1" />Supprimer</Button>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-body ${p.status === "active" ? "bg-green-500/20 text-green-400" : p.status === "suspended" ? "bg-yellow-500/20 text-yellow-400" : "bg-destructive/20 text-destructive"}`}>{p.status || "active"}</span>
-                      <Button variant="ghost" size="sm" onClick={() => navigate(`/stand/${p.moissonneur_code}`)} className="text-xs text-primary">Stand</Button>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    {p.status !== "suspended" && <Button variant="outline" size="sm" onClick={() => updateUserStatus(p.user_id, "suspended")} className="text-xs"><Ban className="w-3 h-3 mr-1" />Suspendre</Button>}
-                    {p.status === "suspended" && <Button variant="gold" size="sm" onClick={() => updateUserStatus(p.user_id, "active")} className="text-xs"><Power className="w-3 h-3 mr-1" />Activer</Button>}
-                    <Button variant="destructive" size="sm" onClick={() => updateUserStatus(p.user_id, "deleted")} className="text-xs"><Trash2 className="w-3 h-3 mr-1" />Supprimer</Button>
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </CollapsibleContent>
+            </Collapsible>
+
+            <Collapsible open={hostsOpen} onOpenChange={setHostsOpen}>
+              <CollapsibleTrigger className="flex items-center gap-2 w-full text-left py-2">
+                {hostsOpen ? <ChevronDown className="w-5 h-5 text-primary" /> : <ChevronRight className="w-5 h-5 text-primary" />}
+                <h2 className="text-xl font-heading font-bold text-foreground">Hôtels ({hosts.filter(p => { const s = searchUsers.toLowerCase(); return !s || (p.full_name||'').toLowerCase().includes(s) || p.moissonneur_code.toLowerCase().includes(s) || p.city.toLowerCase().includes(s) || p.country.toLowerCase().includes(s); }).length})</h2>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="grid gap-3 mt-2">
+                  {hosts.filter(p => { const s = searchUsers.toLowerCase(); return !s || (p.full_name||'').toLowerCase().includes(s) || p.moissonneur_code.toLowerCase().includes(s) || p.city.toLowerCase().includes(s) || p.country.toLowerCase().includes(s); }).map(p => (
+                    <div key={p.id} className="p-4 rounded-xl bg-card border border-border">
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <p className="text-sm font-semibold text-foreground font-body">{p.full_name || "—"}</p>
+                          <p className="text-xs text-muted-foreground font-body">{p.moissonneur_code} · {p.city}, {p.country} · Solde: {formatAmount(p.wallet_balance, p.currency || 'XAF')}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-0.5 rounded-full text-xs font-body ${p.status === "active" ? "bg-green-500/20 text-green-400" : p.status === "suspended" ? "bg-yellow-500/20 text-yellow-400" : "bg-destructive/20 text-destructive"}`}>{p.status || "active"}</span>
+                          <Button variant="ghost" size="sm" onClick={() => navigate(`/stand/${p.moissonneur_code}`)} className="text-xs text-primary">Stand</Button>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        {p.status !== "suspended" && <Button variant="outline" size="sm" onClick={() => updateUserStatus(p.user_id, "suspended")} className="text-xs"><Ban className="w-3 h-3 mr-1" />Suspendre</Button>}
+                        {p.status === "suspended" && <Button variant="gold" size="sm" onClick={() => updateUserStatus(p.user_id, "active")} className="text-xs"><Power className="w-3 h-3 mr-1" />Activer</Button>}
+                        <Button variant="destructive" size="sm" onClick={() => updateUserStatus(p.user_id, "deleted")} className="text-xs"><Trash2 className="w-3 h-3 mr-1" />Supprimer</Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
           </div>
         )}
 
@@ -357,8 +382,12 @@ const AdminDashboard = () => {
         {activeTab === "transactions" && (
           <div>
             <h2 className="text-xl font-heading font-bold text-foreground mb-4">Transactions ({allTransactions.length})</h2>
+            <div className="relative mb-4">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input placeholder="Rechercher par type, statut, description..." value={searchTransactions} onChange={e => setSearchTransactions(e.target.value)} className="pl-9" />
+            </div>
             <div className="grid gap-3">
-              {allTransactions.map(tx => (
+              {allTransactions.filter(tx => { const s = searchTransactions.toLowerCase(); if (!s) return true; const profile = [...clients, ...hosts].find(x => x.user_id === tx.user_id); return tx.type.toLowerCase().includes(s) || tx.status.toLowerCase().includes(s) || (tx.description||'').toLowerCase().includes(s) || (tx.recipient_code||'').toLowerCase().includes(s) || (profile?.full_name||'').toLowerCase().includes(s) || (profile?.moissonneur_code||'').toLowerCase().includes(s); }).map(tx => (
                 <div key={tx.id} className="p-4 rounded-xl bg-card border border-border">
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-2">
@@ -478,8 +507,12 @@ const AdminDashboard = () => {
             </div>
 
             <h3 className="font-heading font-semibold text-foreground mb-3">Rôles attribués</h3>
+            <div className="relative mb-4">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input placeholder="Rechercher par nom, code, rôle..." value={searchRoles} onChange={e => setSearchRoles(e.target.value)} className="pl-9" />
+            </div>
             <div className="grid gap-3">
-              {userRoles.map(ur => {
+              {userRoles.filter(ur => { const s = searchRoles.toLowerCase(); if (!s) return true; const profile = allProfiles.find(p => p.user_id === ur.user_id); return (profile?.full_name||'').toLowerCase().includes(s) || (profile?.moissonneur_code||'').toLowerCase().includes(s) || (ROLE_LABELS[ur.role]||ur.role).toLowerCase().includes(s); }).map(ur => {
                 const profile = allProfiles.find(p => p.user_id === ur.user_id);
                 return (
                   <div key={ur.id} className="p-4 rounded-xl bg-card border border-border flex items-center justify-between">
