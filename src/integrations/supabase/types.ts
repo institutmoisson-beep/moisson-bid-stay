@@ -67,7 +67,9 @@ export type Database = {
           budget: number
           capacity: number
           check_in: string | null
+          check_in_time: string | null
           check_out: string | null
+          check_out_time: string | null
           city: string
           country: string
           created_at: string
@@ -85,7 +87,9 @@ export type Database = {
           budget?: number
           capacity?: number
           check_in?: string | null
+          check_in_time?: string | null
           check_out?: string | null
+          check_out_time?: string | null
           city: string
           country?: string
           created_at?: string
@@ -103,7 +107,9 @@ export type Database = {
           budget?: number
           capacity?: number
           check_in?: string | null
+          check_in_time?: string | null
           check_out?: string | null
+          check_out_time?: string | null
           city?: string
           country?: string
           created_at?: string
