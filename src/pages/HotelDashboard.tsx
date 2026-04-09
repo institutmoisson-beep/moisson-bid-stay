@@ -523,7 +523,14 @@ const HotelDashboard = () => {
                     <div>
                       <Label className="font-body">Images</Label>
                       <input type="file" accept="image/*" multiple onChange={e => setNewImages(Array.from(e.target.files || []))} className="mt-1 w-full text-sm text-muted-foreground font-body file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:opacity-90" />
-                      {newImages.length > 0 && <p className="text-xs text-muted-foreground mt-1">{newImages.length} image(s) sélectionnée(s)</p>}
+                      {newImages.length > 0 && (
+                        <div className="flex gap-2 mt-2 overflow-x-auto pb-2">
+                          {newImages.map((f, i) => (
+                            <img key={i} src={URL.createObjectURL(f)} alt="" className="w-20 h-20 object-cover rounded-lg border border-border" />
+                          ))}
+                        </div>
+                      )}
+                      {uploadingImages && <p className="text-xs text-primary font-body mt-1 animate-pulse">Upload en cours...</p>}
                     </div>
 
                     <div className="flex gap-3 pt-2">
