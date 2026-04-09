@@ -167,7 +167,7 @@ const Annuaire = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Rechercher par pays, ville, quartier..."
+              placeholder="Rechercher par nom, pays, ville, quartier, type..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-card border border-border text-foreground font-body text-sm focus:border-primary focus:outline-none"
