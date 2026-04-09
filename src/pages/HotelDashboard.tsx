@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import CurrencySelector from "@/components/CurrencySelector";
 import { getCurrencySymbol, formatAmount } from "@/lib/currencies";
+import { compressImages } from "@/lib/imageUtils";
 
 const HotelDashboard = () => {
   const [user, setUser] = useState<any>(null);
@@ -187,16 +188,17 @@ const HotelDashboard = () => {
       toast({ title: "Résidence ajoutée" });
     }
 
-    // Upload images
+    // Upload images (compress first)
     if (newImages.length > 0 && residenceId) {
       setUploadingImages(true);
+      const compressedImages = await compressImages(newImages);
       let uploadedCount = 0;
-      for (let i = 0; i < newImages.length; i++) {
-        const file = newImages[i];
+      for (let i = 0; i < compressedImages.length; i++) {
+        const file = compressedImages[i];
         const ext = file.name.split('.').pop() || 'jpg';
         const path = `${residenceId}/${Date.now()}_${i}.${ext}`;
         const { error: uploadError } = await supabase.storage.from("residence-images").upload(path, file, {
-          cacheControl: '3600',
+          cacheControl: '31536000',
           upsert: false,
         });
         if (uploadError) {
