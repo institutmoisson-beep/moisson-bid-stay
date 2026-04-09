@@ -130,9 +130,28 @@ const HotelDashboard = () => {
       return;
     }
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setForm(prev => ({ ...prev, gps_lat: pos.coords.latitude, gps_lng: pos.coords.longitude }));
+      async (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        setForm(prev => ({ ...prev, gps_lat: lat, gps_lng: lng }));
         toast({ title: "Localisation récupérée" });
+        // Reverse geocode to auto-fill city and neighborhood
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=fr`);
+          const data = await res.json();
+          if (data?.address) {
+            const city = data.address.city || data.address.town || data.address.village || data.address.municipality || "";
+            const neighborhood = data.address.suburb || data.address.neighbourhood || data.address.quarter || "";
+            const country = data.address.country || "";
+            setForm(prev => ({
+              ...prev,
+              city: city || prev.city,
+              neighborhood: neighborhood || prev.neighborhood,
+              country: country || prev.country,
+            }));
+            toast({ title: "Adresse détectée", description: `${neighborhood}, ${city}, ${country}` });
+          }
+        } catch {}
       },
       () => toast({ title: "Erreur", description: "Impossible d'obtenir la localisation.", variant: "destructive" })
     );

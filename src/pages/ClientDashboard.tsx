@@ -21,6 +21,7 @@ const ClientDashboard = () => {
   const [form, setForm] = useState({
     country: "Cameroun", city: "", neighborhood: "", whatsapp_contact: "",
     type_needed: "appartement", capacity: 1, check_in: "", check_out: "",
+    check_in_time: "", check_out_time: "",
     budget: 0, description: "", room_standard: "standard",
   });
   const navigate = useNavigate();
@@ -62,11 +63,12 @@ const ClientDashboard = () => {
     const { error } = await supabase.from("needs").insert({
       ...form, user_id: user.id,
       check_in: form.check_in || null, check_out: form.check_out || null,
+      check_in_time: form.check_in_time || null, check_out_time: form.check_out_time || null,
     });
     if (error) { toast({ title: "Erreur", description: error.message, variant: "destructive" }); return; }
     toast({ title: "Besoin publié", description: "Les hôtels seront notifiés." });
     setShowForm(false);
-    setForm({ country: "Cameroun", city: "", neighborhood: "", whatsapp_contact: "", type_needed: "appartement", capacity: 1, check_in: "", check_out: "", budget: 0, description: "", room_standard: "standard" });
+    setForm({ country: "Cameroun", city: "", neighborhood: "", whatsapp_contact: "", type_needed: "appartement", capacity: 1, check_in: "", check_out: "", check_in_time: "", check_out_time: "", budget: 0, description: "", room_standard: "standard" });
     fetchAll(user.id);
   };
 
@@ -199,6 +201,10 @@ const ClientDashboard = () => {
                       <div><Label className="font-body">Date d'arrivée</Label><Input type="date" value={form.check_in} onChange={e => setForm({ ...form, check_in: e.target.value })} className="mt-1" /></div>
                       <div><Label className="font-body">Date de départ</Label><Input type="date" value={form.check_out} onChange={e => setForm({ ...form, check_out: e.target.value })} className="mt-1" /></div>
                     </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div><Label className="font-body">Heure d'arrivée</Label><Input type="time" value={form.check_in_time} onChange={e => setForm({ ...form, check_in_time: e.target.value })} className="mt-1" /></div>
+                      <div><Label className="font-body">Heure de départ</Label><Input type="time" value={form.check_out_time} onChange={e => setForm({ ...form, check_out_time: e.target.value })} className="mt-1" /></div>
+                    </div>
                     <div><Label className="font-body">Budget (FCFA)</Label><Input type="number" value={form.budget} onChange={e => setForm({ ...form, budget: Number(e.target.value) })} min={0} className="mt-1" /></div>
                     <div><Label className="font-body">Description</Label><Textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} className="mt-1" rows={3} placeholder="Décrivez votre besoin..." /></div>
                     <div className="flex gap-3 pt-2">
@@ -228,8 +234,8 @@ const ClientDashboard = () => {
                         <p className="text-sm text-muted-foreground font-body mb-1">{n.neighborhood}, {n.city} — {n.country}</p>
                         <div className="flex flex-wrap gap-4 text-sm text-muted-foreground font-body">
                           <span>{n.capacity} pers.</span>
-                          {n.check_in && <span>Du {n.check_in}</span>}
-                          {n.check_out && <span>au {n.check_out}</span>}
+                          {n.check_in && <span>Du {n.check_in}{n.check_in_time ? ` à ${n.check_in_time}` : ""}</span>}
+                          {n.check_out && <span>au {n.check_out}{n.check_out_time ? ` à ${n.check_out_time}` : ""}</span>}
                           <span className="text-primary font-semibold">{n.budget} FCFA</span>
                         </div>
                         <a href={`https://wa.me/${n.whatsapp_contact.replace(/[^0-9+]/g, "")}`} target="_blank" rel="noopener noreferrer"

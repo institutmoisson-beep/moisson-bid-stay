@@ -70,8 +70,8 @@ const PublicNeeds = () => {
                 </div>
                 <div className="flex flex-wrap gap-3 text-sm text-muted-foreground font-body mb-2">
                   <span className="flex items-center gap-1"><Users className="w-3 h-3" /> {n.capacity} pers.</span>
-                  {n.check_in && <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {n.check_in}</span>}
-                  {n.check_out && <span>→ {n.check_out}</span>}
+                  {n.check_in && <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {n.check_in}{(n as any).check_in_time ? ` à ${(n as any).check_in_time}` : ""}</span>}
+                  {n.check_out && <span>→ {n.check_out}{(n as any).check_out_time ? ` à ${(n as any).check_out_time}` : ""}</span>}
                 </div>
                 <p className="text-primary font-bold font-body text-lg mb-2">{n.budget} FCFA</p>
                 {n.description && <p className="text-sm text-muted-foreground font-body mb-3">{n.description}</p>}
