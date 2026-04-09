@@ -206,8 +206,8 @@ const Annuaire = () => {
                 <Card key={r.id} className="overflow-hidden hover:border-primary/30 transition-colors bg-card border-border">
                   {/* Image */}
                   {images[r.id]?.length > 0 ? (
-                    <div className="relative h-48 overflow-hidden">
-                      <img src={images[r.id][0].image_url} alt={r.name} className="w-full h-full object-cover" loading="lazy" />
+                    <div className="relative h-48 overflow-hidden bg-secondary">
+                      <img src={images[r.id][0].image_url} alt={r.name} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                       {images[r.id].length > 1 && (
                         <span className="absolute bottom-2 right-2 px-2 py-0.5 rounded-full text-xs bg-background/80 text-foreground font-body">
                           +{images[r.id].length - 1} photos
