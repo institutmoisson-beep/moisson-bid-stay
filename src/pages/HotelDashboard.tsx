@@ -190,18 +190,34 @@ const HotelDashboard = () => {
     // Upload images
     if (newImages.length > 0 && residenceId) {
       setUploadingImages(true);
+      let uploadedCount = 0;
       for (let i = 0; i < newImages.length; i++) {
         const file = newImages[i];
-        const path = `${residenceId}/${Date.now()}_${file.name}`;
-        const { error: uploadError } = await supabase.storage.from("residence-images").upload(path, file);
-        if (!uploadError) {
+        const ext = file.name.split('.').pop() || 'jpg';
+        const path = `${residenceId}/${Date.now()}_${i}.${ext}`;
+        const { error: uploadError } = await supabase.storage.from("residence-images").upload(path, file, {
+          cacheControl: '3600',
+          upsert: false,
+        });
+        if (uploadError) {
+          console.error("Upload error:", uploadError);
+          toast({ title: "Erreur upload", description: `Image ${i + 1}: ${uploadError.message}`, variant: "destructive" });
+        } else {
           const { data: urlData } = supabase.storage.from("residence-images").getPublicUrl(path);
-          await supabase.from("residence_images").insert({
+          const { error: insertErr } = await supabase.from("residence_images").insert({
             residence_id: residenceId, image_url: urlData.publicUrl, display_order: i,
           });
+          if (insertErr) {
+            console.error("Insert image error:", insertErr);
+          } else {
+            uploadedCount++;
+          }
         }
       }
       setUploadingImages(false);
+      if (uploadedCount > 0) {
+        toast({ title: `${uploadedCount} image(s) uploadée(s) avec succès` });
+      }
     }
 
     resetForm();
