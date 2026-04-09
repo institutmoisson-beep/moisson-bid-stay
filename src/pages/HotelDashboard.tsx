@@ -190,18 +190,34 @@ const HotelDashboard = () => {
     // Upload images
     if (newImages.length > 0 && residenceId) {
       setUploadingImages(true);
+      let uploadedCount = 0;
       for (let i = 0; i < newImages.length; i++) {
         const file = newImages[i];
-        const path = `${residenceId}/${Date.now()}_${file.name}`;
-        const { error: uploadError } = await supabase.storage.from("residence-images").upload(path, file);
-        if (!uploadError) {
+        const ext = file.name.split('.').pop() || 'jpg';
+        const path = `${residenceId}/${Date.now()}_${i}.${ext}`;
+        const { error: uploadError } = await supabase.storage.from("residence-images").upload(path, file, {
+          cacheControl: '3600',
+          upsert: false,
+        });
+        if (uploadError) {
+          console.error("Upload error:", uploadError);
+          toast({ title: "Erreur upload", description: `Image ${i + 1}: ${uploadError.message}`, variant: "destructive" });
+        } else {
           const { data: urlData } = supabase.storage.from("residence-images").getPublicUrl(path);
-          await supabase.from("residence_images").insert({
+          const { error: insertErr } = await supabase.from("residence_images").insert({
             residence_id: residenceId, image_url: urlData.publicUrl, display_order: i,
           });
+          if (insertErr) {
+            console.error("Insert image error:", insertErr);
+          } else {
+            uploadedCount++;
+          }
         }
       }
       setUploadingImages(false);
+      if (uploadedCount > 0) {
+        toast({ title: `${uploadedCount} image(s) uploadée(s) avec succès` });
+      }
     }
 
     resetForm();
@@ -507,7 +523,14 @@ const HotelDashboard = () => {
                     <div>
                       <Label className="font-body">Images</Label>
                       <input type="file" accept="image/*" multiple onChange={e => setNewImages(Array.from(e.target.files || []))} className="mt-1 w-full text-sm text-muted-foreground font-body file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:opacity-90" />
-                      {newImages.length > 0 && <p className="text-xs text-muted-foreground mt-1">{newImages.length} image(s) sélectionnée(s)</p>}
+                      {newImages.length > 0 && (
+                        <div className="flex gap-2 mt-2 overflow-x-auto pb-2">
+                          {newImages.map((f, i) => (
+                            <img key={i} src={URL.createObjectURL(f)} alt="" className="w-20 h-20 object-cover rounded-lg border border-border" />
+                          ))}
+                        </div>
+                      )}
+                      {uploadingImages && <p className="text-xs text-primary font-body mt-1 animate-pulse">Upload en cours...</p>}
                     </div>
 
                     <div className="flex gap-3 pt-2">
