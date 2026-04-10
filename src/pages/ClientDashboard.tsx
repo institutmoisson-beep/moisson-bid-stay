@@ -128,9 +128,9 @@ const ClientDashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       <header className="glass-dark sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <span className="text-xl font-heading font-bold text-gradient-gold cursor-pointer" onClick={() => navigate("/")}>Moisson</span>
-          <div className="flex items-center gap-1 overflow-x-auto">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 h-14 sm:h-16 flex items-center justify-between">
+          <span className="text-lg sm:text-xl font-heading font-bold text-gradient-gold cursor-pointer" onClick={() => navigate("/")}>Moisson</span>
+          <div className="flex items-center gap-0.5 sm:gap-1 overflow-x-auto scrollbar-hide">
             {[
               { key: "needs", label: "Besoins", icon: List },
               { key: "wallet", label: "Wallet", icon: Wallet },
@@ -154,7 +154,7 @@ const ClientDashboard = () => {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 py-8">
+      <main className="max-w-5xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* PROFILE */}
         {activeTab === "profile" && profile && (
           <div className="space-y-6">
