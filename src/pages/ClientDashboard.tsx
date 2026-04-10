@@ -210,6 +210,9 @@ const ClientDashboard = () => {
                   </div>
                   <form onSubmit={handleSubmitNeed} className="space-y-4">
                     <div><Label className="font-body">Contact WhatsApp *</Label><Input value={form.whatsapp_contact} onChange={e => setForm({ ...form, whatsapp_contact: e.target.value })} required className="mt-1" placeholder="+237 6XX XXX XXX" /></div>
+                    <Button type="button" variant="gold-outline" size="sm" className="w-full" onClick={getLocation} disabled={locating}>
+                      <Locate className="w-4 h-4 mr-2" /> {locating ? "Détection en cours..." : "📍 Utiliser ma position actuelle"}
+                    </Button>
                     <div className="grid grid-cols-2 gap-4">
                       <div><Label className="font-body">Pays</Label><Input value={form.country} onChange={e => setForm({ ...form, country: e.target.value })} required className="mt-1" /></div>
                       <div><Label className="font-body">Ville</Label><Input value={form.city} onChange={e => setForm({ ...form, city: e.target.value })} required className="mt-1" placeholder="Douala" /></div>
