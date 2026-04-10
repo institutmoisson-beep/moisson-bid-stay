@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, LogOut, User, List, X, Phone, Wallet, ShieldCheck, Users, Star, Home } from "lucide-react";
+import { Plus, LogOut, User, List, X, Phone, Wallet, ShieldCheck, Users, Star, Home, Locate } from "lucide-react";
 import CurrencySelector from "@/components/CurrencySelector";
 import { getCurrencySymbol, formatAmount, fetchAndRefreshRates } from "@/lib/currencies";
 
@@ -28,6 +28,39 @@ const ClientDashboard = () => {
   const { toast } = useToast();
   const typeOptions = ["appartement", "chambre", "studio", "villa", "maison", "hôtel", "2 pièces", "3 pièces"];
   const standardOptions = ["standard", "économique", "confort", "premium", "luxe"];
+  const [locating, setLocating] = useState(false);
+
+  const getLocation = async () => {
+    if (!navigator.geolocation) {
+      toast({ title: "Erreur", description: "Géolocalisation non supportée.", variant: "destructive" });
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&accept-language=fr`);
+          const data = await res.json();
+          const addr = data.address || {};
+          setForm(f => ({
+            ...f,
+            country: addr.country || f.country,
+            city: addr.city || addr.town || addr.village || addr.municipality || f.city,
+            neighborhood: addr.suburb || addr.neighbourhood || addr.quarter || addr.hamlet || f.neighborhood,
+          }));
+          toast({ title: "Position détectée", description: `${addr.city || addr.town || ""}, ${addr.country || ""}` });
+        } catch {
+          toast({ title: "Erreur", description: "Impossible de déterminer l'adresse.", variant: "destructive" });
+        }
+        setLocating(false);
+      },
+      () => {
+        toast({ title: "Erreur", description: "Accès à la localisation refusé.", variant: "destructive" });
+        setLocating(false);
+      },
+      { enableHighAccuracy: true, timeout: 15000 }
+    );
+  };
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
