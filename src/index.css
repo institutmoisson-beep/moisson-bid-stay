@@ -105,4 +105,29 @@
     backdrop-filter: blur(20px);
     border: 1px solid hsl(0 0% 16% / 0.5);
   }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Safe area for notched phones */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .glass-dark {
+    padding-top: env(safe-area-inset-top);
+  }
+}
+
+/* Improve touch targets on mobile */
+@media (max-width: 640px) {
+  button, a, select, input {
+    min-height: 44px;
+  }
+  select {
+    font-size: 16px; /* prevents zoom on iOS */
+  }
 }

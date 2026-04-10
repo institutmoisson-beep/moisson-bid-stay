@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, LogOut, User, List, X, Phone, Wallet, ShieldCheck, Users, Star, Home } from "lucide-react";
+import { Plus, LogOut, User, List, X, Phone, Wallet, ShieldCheck, Users, Star, Home, Locate } from "lucide-react";
 import CurrencySelector from "@/components/CurrencySelector";
 import { getCurrencySymbol, formatAmount, fetchAndRefreshRates } from "@/lib/currencies";
 
@@ -28,6 +28,39 @@ const ClientDashboard = () => {
   const { toast } = useToast();
   const typeOptions = ["appartement", "chambre", "studio", "villa", "maison", "hôtel", "2 pièces", "3 pièces"];
   const standardOptions = ["standard", "économique", "confort", "premium", "luxe"];
+  const [locating, setLocating] = useState(false);
+
+  const getLocation = async () => {
+    if (!navigator.geolocation) {
+      toast({ title: "Erreur", description: "Géolocalisation non supportée.", variant: "destructive" });
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&accept-language=fr`);
+          const data = await res.json();
+          const addr = data.address || {};
+          setForm(f => ({
+            ...f,
+            country: addr.country || f.country,
+            city: addr.city || addr.town || addr.village || addr.municipality || f.city,
+            neighborhood: addr.suburb || addr.neighbourhood || addr.quarter || addr.hamlet || f.neighborhood,
+          }));
+          toast({ title: "Position détectée", description: `${addr.city || addr.town || ""}, ${addr.country || ""}` });
+        } catch {
+          toast({ title: "Erreur", description: "Impossible de déterminer l'adresse.", variant: "destructive" });
+        }
+        setLocating(false);
+      },
+      () => {
+        toast({ title: "Erreur", description: "Accès à la localisation refusé.", variant: "destructive" });
+        setLocating(false);
+      },
+      { enableHighAccuracy: true, timeout: 15000 }
+    );
+  };
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
@@ -95,9 +128,9 @@ const ClientDashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       <header className="glass-dark sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <span className="text-xl font-heading font-bold text-gradient-gold cursor-pointer" onClick={() => navigate("/")}>Moisson</span>
-          <div className="flex items-center gap-1 overflow-x-auto">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 h-14 sm:h-16 flex items-center justify-between">
+          <span className="text-lg sm:text-xl font-heading font-bold text-gradient-gold cursor-pointer" onClick={() => navigate("/")}>Moisson</span>
+          <div className="flex items-center gap-0.5 sm:gap-1 overflow-x-auto scrollbar-hide">
             {[
               { key: "needs", label: "Besoins", icon: List },
               { key: "wallet", label: "Wallet", icon: Wallet },
@@ -121,7 +154,7 @@ const ClientDashboard = () => {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 py-8">
+      <main className="max-w-5xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* PROFILE */}
         {activeTab === "profile" && profile && (
           <div className="space-y-6">
@@ -177,6 +210,9 @@ const ClientDashboard = () => {
                   </div>
                   <form onSubmit={handleSubmitNeed} className="space-y-4">
                     <div><Label className="font-body">Contact WhatsApp *</Label><Input value={form.whatsapp_contact} onChange={e => setForm({ ...form, whatsapp_contact: e.target.value })} required className="mt-1" placeholder="+237 6XX XXX XXX" /></div>
+                    <Button type="button" variant="gold-outline" size="sm" className="w-full" onClick={getLocation} disabled={locating}>
+                      <Locate className="w-4 h-4 mr-2" /> {locating ? "Détection en cours..." : "📍 Utiliser ma position actuelle"}
+                    </Button>
                     <div className="grid grid-cols-2 gap-4">
                       <div><Label className="font-body">Pays</Label><Input value={form.country} onChange={e => setForm({ ...form, country: e.target.value })} required className="mt-1" /></div>
                       <div><Label className="font-body">Ville</Label><Input value={form.city} onChange={e => setForm({ ...form, city: e.target.value })} required className="mt-1" placeholder="Douala" /></div>
