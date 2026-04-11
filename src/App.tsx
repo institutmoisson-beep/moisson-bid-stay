@@ -10,6 +10,7 @@ import HotelDashboard from "./pages/HotelDashboard.tsx";
 import PublicNeeds from "./pages/PublicNeeds.tsx";
 import StandPage from "./pages/StandPage.tsx";
 import Annuaire from "./pages/Annuaire.tsx";
+import ResidenceDetail from "./pages/ResidenceDetail.tsx";
 import AdminDashboard from "./pages/AdminDashboard.tsx";
 import CityManagerDashboard from "./pages/CityManagerDashboard.tsx";
 import NotFound from "./pages/NotFound.tsx";
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/hotel-dashboard" element={<HotelDashboard />} />
           <Route path="/besoins" element={<PublicNeeds />} />
           <Route path="/annuaire" element={<Annuaire />} />
+          <Route path="/residence/:id" element={<ResidenceDetail />} />
           <Route path="/stand/:code" element={<StandPage />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/city-manager" element={<CityManagerDashboard />} />

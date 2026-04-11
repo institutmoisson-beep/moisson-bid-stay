@@ -319,11 +319,11 @@ const AdminDashboard = () => {
                   </div>
                   <p className="text-xs text-muted-foreground font-body">{n.neighborhood}, {n.city} — {n.country} · {n.budget} FCFA · {n.capacity} pers.</p>
                   <p className="text-xs text-muted-foreground font-body mt-1">{new Date(n.created_at).toLocaleString("fr-FR")}</p>
-                  <div className="flex gap-2 mt-2">
-                    {n.status === "active" && <Button variant="outline" size="sm" onClick={() => updateNeedStatus(n.id, "cancelled")} className="text-xs"><XCircle className="w-3 h-3 mr-1" />Annuler</Button>}
-                    {n.status !== "active" && <Button variant="gold" size="sm" onClick={() => updateNeedStatus(n.id, "active")} className="text-xs"><Power className="w-3 h-3 mr-1" />Activer</Button>}
-                    <Button variant="destructive" size="sm" onClick={() => updateNeedStatus(n.id, "deleted")} className="text-xs"><Trash2 className="w-3 h-3 mr-1" />Supprimer</Button>
-                  </div>
+                   <div className="flex gap-2 mt-2">
+                     {n.status === "active" && <Button variant="outline" size="sm" onClick={() => updateNeedStatus(n.id, "cancelled")} className="text-xs"><XCircle className="w-3 h-3 mr-1" />Suspendre</Button>}
+                     {n.status !== "active" && <Button variant="gold" size="sm" onClick={() => updateNeedStatus(n.id, "active")} className="text-xs"><Power className="w-3 h-3 mr-1" />Activer</Button>}
+                     <Button variant="destructive" size="sm" onClick={async () => { await supabase.from("needs").delete().eq("id", n.id); toast({ title: "Besoin supprimé" }); fetchAll(); }} className="text-xs"><Trash2 className="w-3 h-3 mr-1" />Supprimer</Button>
+                   </div>
                 </div>
               ))}
             </div>
@@ -342,9 +342,22 @@ const AdminDashboard = () => {
                       <span className="text-sm font-semibold text-foreground font-body">{r.name}</span>
                       <span className="px-2 py-0.5 rounded-full text-xs bg-primary/10 text-primary font-body capitalize">{r.room_standard}</span>
                     </div>
-                    <span className="text-xs text-primary font-body">{r.min_price} FCFA</span>
+                    <div className="flex items-center gap-2">
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-body ${r.is_published ? "bg-green-500/20 text-green-400" : "bg-yellow-500/20 text-yellow-400"}`}>
+                        {r.is_published ? "Publié" : "Masqué"}
+                      </span>
+                      <span className="text-xs text-primary font-body">{r.min_price} FCFA</span>
+                    </div>
                   </div>
                   <p className="text-xs text-muted-foreground font-body">{r.neighborhood}, {r.city} · {r.type} · {r.capacity} pers.</p>
+                  <div className="flex gap-2 mt-2">
+                    {r.is_published ? (
+                      <Button variant="outline" size="sm" onClick={async () => { await supabase.from("residences").update({ is_published: false }).eq("id", r.id); toast({ title: "Résidence masquée" }); fetchAll(); }} className="text-xs"><Ban className="w-3 h-3 mr-1" />Masquer</Button>
+                    ) : (
+                      <Button variant="gold" size="sm" onClick={async () => { await supabase.from("residences").update({ is_published: true }).eq("id", r.id); toast({ title: "Résidence publiée" }); fetchAll(); }} className="text-xs"><Power className="w-3 h-3 mr-1" />Publier</Button>
+                    )}
+                    <Button variant="destructive" size="sm" onClick={async () => { await supabase.from("residences").delete().eq("id", r.id); toast({ title: "Résidence supprimée" }); fetchAll(); }} className="text-xs"><Trash2 className="w-3 h-3 mr-1" />Supprimer</Button>
+                  </div>
                 </div>
               ))}
             </div>
