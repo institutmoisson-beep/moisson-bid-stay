@@ -106,8 +106,17 @@ const ClientDashboard = () => {
   };
 
   const handleDeleteNeed = async (id: string) => {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer ce besoin ?")) return;
     await supabase.from("needs").delete().eq("id", id);
     toast({ title: "Besoin supprimé" });
+    if (user) fetchAll(user.id);
+  };
+
+  const handleCancelNeed = async (id: string) => {
+    if (!confirm("Êtes-vous sûr de vouloir annuler ce besoin ?")) return;
+    const { error } = await supabase.from("needs").update({ status: "cancelled" }).eq("id", id);
+    if (error) { toast({ title: "Erreur", description: error.message, variant: "destructive" }); return; }
+    toast({ title: "Besoin annulé" });
     if (user) fetchAll(user.id);
   };
 
@@ -256,33 +265,50 @@ const ClientDashboard = () => {
               <div className="text-center py-16"><List className="w-12 h-12 text-muted-foreground mx-auto mb-4" /><p className="text-muted-foreground font-body">Aucun besoin émis.</p></div>
             ) : (
               <div className="grid gap-4">
-                {needs.map(n => (
-                  <div key={n.id} className="p-5 rounded-xl bg-card border border-border hover:border-primary/20 transition-colors shadow-card">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-lg font-heading font-semibold text-foreground capitalize">{n.type_needed}</h3>
-                          <span className={`px-2 py-0.5 rounded-full text-xs font-body ${n.status === "active" ? "bg-green-500/20 text-green-400" : "bg-muted text-muted-foreground"}`}>{n.status}</span>
-                          {n.room_standard && n.room_standard !== "standard" && (
-                            <span className="px-2 py-0.5 rounded-full text-xs bg-primary/10 text-primary font-body capitalize">{n.room_standard}</span>
+                {needs.map(n => {
+                  const statusStyle = n.status === "active" ? "bg-green-500/20 text-green-400" :
+                    n.status === "cancelled" ? "bg-destructive/20 text-destructive" :
+                    n.status === "suspended" ? "bg-yellow-500/20 text-yellow-400" :
+                    "bg-muted text-muted-foreground";
+                  const statusLabel = n.status === "active" ? "Actif" :
+                    n.status === "cancelled" ? "Annulé" :
+                    n.status === "suspended" ? "Suspendu" : n.status;
+                  return (
+                    <div key={n.id} className="p-5 rounded-xl bg-card border border-border hover:border-primary/20 transition-colors shadow-card">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2 flex-wrap">
+                            <h3 className="text-lg font-heading font-semibold text-foreground capitalize">{n.type_needed}</h3>
+                            <span className={`px-2 py-0.5 rounded-full text-xs font-body ${statusStyle}`}>{statusLabel}</span>
+                            {n.room_standard && n.room_standard !== "standard" && (
+                              <span className="px-2 py-0.5 rounded-full text-xs bg-primary/10 text-primary font-body capitalize">{n.room_standard}</span>
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground font-body mb-1">{n.neighborhood}, {n.city} — {n.country}</p>
+                          <div className="flex flex-wrap gap-4 text-sm text-muted-foreground font-body">
+                            <span>{n.capacity} pers.</span>
+                            {n.check_in && <span>Du {n.check_in}{n.check_in_time ? ` à ${n.check_in_time}` : ""}</span>}
+                            {n.check_out && <span>au {n.check_out}{n.check_out_time ? ` à ${n.check_out_time}` : ""}</span>}
+                            <span className="text-primary font-semibold">{n.budget} FCFA</span>
+                          </div>
+                          <a href={`https://wa.me/${n.whatsapp_contact.replace(/[^0-9+]/g, "")}`} target="_blank" rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 mt-2 text-sm text-green-400 hover:underline font-body">
+                            <Phone className="w-3 h-3" /> {n.whatsapp_contact}
+                          </a>
+                          <p className="text-xs text-muted-foreground font-body mt-2">Émis le {new Date(n.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</p>
+                        </div>
+                        <div className="flex flex-col gap-1 ml-2">
+                          {n.status === "active" && (
+                            <Button variant="outline" size="sm" onClick={() => handleCancelNeed(n.id)} className="text-yellow-500 border-yellow-500/30 hover:bg-yellow-500/10">
+                              <XCircle className="w-3 h-3 mr-1" /> Annuler
+                            </Button>
                           )}
+                          <Button variant="ghost" size="icon" onClick={() => handleDeleteNeed(n.id)} className="self-end"><Trash2 className="w-4 h-4 text-destructive" /></Button>
                         </div>
-                        <p className="text-sm text-muted-foreground font-body mb-1">{n.neighborhood}, {n.city} — {n.country}</p>
-                        <div className="flex flex-wrap gap-4 text-sm text-muted-foreground font-body">
-                          <span>{n.capacity} pers.</span>
-                          {n.check_in && <span>Du {n.check_in}{n.check_in_time ? ` à ${n.check_in_time}` : ""}</span>}
-                          {n.check_out && <span>au {n.check_out}{n.check_out_time ? ` à ${n.check_out_time}` : ""}</span>}
-                          <span className="text-primary font-semibold">{n.budget} FCFA</span>
-                        </div>
-                        <a href={`https://wa.me/${n.whatsapp_contact.replace(/[^0-9+]/g, "")}`} target="_blank" rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 mt-2 text-sm text-green-400 hover:underline font-body">
-                          <Phone className="w-3 h-3" /> {n.whatsapp_contact}
-                        </a>
                       </div>
-                      <Button variant="ghost" size="icon" onClick={() => handleDeleteNeed(n.id)}><X className="w-4 h-4 text-destructive" /></Button>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </>
