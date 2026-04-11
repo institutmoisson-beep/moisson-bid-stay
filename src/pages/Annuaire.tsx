@@ -203,7 +203,7 @@ const Annuaire = () => {
             {filteredResidences.map((r) => {
               const host = hosts[r.host_id];
               return (
-                <Card key={r.id} className="overflow-hidden hover:border-primary/30 transition-colors bg-card border-border">
+                <Card key={r.id} className="overflow-hidden hover:border-primary/30 transition-colors bg-card border-border cursor-pointer" onClick={() => navigate(`/residence/${r.id}`)}>
                   {/* Image */}
                   {images[r.id]?.length > 0 ? (
                     <div className="relative h-48 overflow-hidden bg-secondary">
