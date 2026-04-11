@@ -246,8 +246,17 @@ const HotelDashboard = () => {
   };
 
   const handleDelete = async (id: string) => {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer cette résidence ?")) return;
     await supabase.from("residences").delete().eq("id", id);
     toast({ title: "Résidence supprimée" });
+    if (user) fetchAll(user.id);
+  };
+
+  const handleDeleteOrder = async (orderId: string) => {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer cette réservation ?")) return;
+    const { error } = await supabase.from("orders").delete().eq("id", orderId);
+    if (error) { toast({ title: "Erreur", description: error.message, variant: "destructive" }); return; }
+    toast({ title: "Réservation supprimée" });
     if (user) fetchAll(user.id);
   };
 
@@ -398,12 +407,17 @@ const HotelDashboard = () => {
                     <p className="text-sm text-muted-foreground font-body">Paiement : {o.payment_method}</p>
                     {o.host_message && <p className="text-sm text-foreground font-body mt-1">{o.host_message}</p>}
                     <p className="text-xs text-muted-foreground font-body mt-2">{new Date(o.created_at).toLocaleString("fr-FR")}</p>
-                    {o.status === "pending" && (
-                      <div className="flex gap-2 mt-3">
-                        <Button variant="gold" size="sm" onClick={() => handleOrderAction(o.id, "accepted")}><Check className="w-3 h-3 mr-1" /> Accepter</Button>
-                        <Button variant="destructive" size="sm" onClick={() => handleOrderAction(o.id, "refused")}><XCircle className="w-3 h-3 mr-1" /> Refuser</Button>
-                      </div>
-                    )}
+                    <div className="flex gap-2 mt-3 flex-wrap">
+                      {o.status === "pending" && (
+                        <>
+                          <Button variant="gold" size="sm" onClick={() => handleOrderAction(o.id, "accepted")}><Check className="w-3 h-3 mr-1" /> Accepter</Button>
+                          <Button variant="destructive" size="sm" onClick={() => handleOrderAction(o.id, "refused")}><XCircle className="w-3 h-3 mr-1" /> Refuser</Button>
+                        </>
+                      )}
+                      <Button variant="outline" size="sm" onClick={() => handleDeleteOrder(o.id)} className="text-destructive border-destructive/30 hover:bg-destructive/10">
+                        <Trash2 className="w-3 h-3 mr-1" /> Supprimer
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
