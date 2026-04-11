@@ -246,8 +246,17 @@ const HotelDashboard = () => {
   };
 
   const handleDelete = async (id: string) => {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer cette résidence ?")) return;
     await supabase.from("residences").delete().eq("id", id);
     toast({ title: "Résidence supprimée" });
+    if (user) fetchAll(user.id);
+  };
+
+  const handleDeleteOrder = async (orderId: string) => {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer cette réservation ?")) return;
+    const { error } = await supabase.from("orders").delete().eq("id", orderId);
+    if (error) { toast({ title: "Erreur", description: error.message, variant: "destructive" }); return; }
+    toast({ title: "Réservation supprimée" });
     if (user) fetchAll(user.id);
   };
 
