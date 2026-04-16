@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+/* Les polices sont chargées via <link> dans index.html pour meilleure compatibilité */
 
 @layer base {
   :root {
@@ -50,8 +50,8 @@
     --sidebar-border: 0 0% 14%;
     --sidebar-ring: 43 100% 50%;
 
-    --font-heading: 'Playfair Display', serif;
-    --font-body: 'Inter', sans-serif;
+    --font-heading: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
     --gradient-gold: linear-gradient(135deg, hsl(43, 100%, 50%), hsl(43, 100%, 65%));
     --gradient-gold-subtle: linear-gradient(135deg, hsl(43, 80%, 35%), hsl(43, 100%, 50%));
@@ -64,15 +64,31 @@
 @layer base {
   * {
     @apply border-border;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overscroll-behavior: none;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
+  }
+
+  /* Evite les débordements horizontaux */
+  #root {
+    overflow-x: hidden;
+    width: 100%;
   }
 }
 
@@ -101,9 +117,10 @@
   }
 
   .glass-dark {
-    background: hsl(0 0% 6% / 0.8);
+    background: hsl(0 0% 6% / 0.9);
+    -webkit-backdrop-filter: blur(20px);
     backdrop-filter: blur(20px);
-    border: 1px solid hsl(0 0% 16% / 0.5);
+    border-bottom: 1px solid hsl(0 0% 16% / 0.5);
   }
 
   .scrollbar-hide {
@@ -115,19 +132,37 @@
   }
 }
 
-/* Safe area for notched phones */
+/* Safe area pour les téléphones avec encoche */
 @supports (padding-top: env(safe-area-inset-top)) {
   .glass-dark {
-    padding-top: env(safe-area-inset-top);
+    padding-top: max(0px, env(safe-area-inset-top));
   }
 }
 
-/* Improve touch targets on mobile */
+/* Améliorer les zones tactiles sur mobile */
 @media (max-width: 640px) {
-  button, a, select, input {
+  button, a[href], select, input[type="button"], input[type="submit"] {
     min-height: 44px;
+    min-width: 44px;
   }
   select {
-    font-size: 16px; /* prevents zoom on iOS */
+    font-size: 16px; /* Empêche le zoom sur iOS */
+  }
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="date"],
+  input[type="time"],
+  textarea {
+    font-size: 16px; /* Empêche le zoom sur iOS */
+  }
+}
+
+/* Correction du scroll sur iOS Safari */
+@supports (-webkit-overflow-scrolling: touch) {
+  .overflow-y-auto,
+  .overflow-auto {
+    -webkit-overflow-scrolling: touch;
   }
 }
