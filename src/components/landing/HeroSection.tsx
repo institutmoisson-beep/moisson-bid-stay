@@ -1,22 +1,31 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import heroBg from "@/assets/hero-bg.jpg";
 
 const HeroSection = () => {
   const navigate = useNavigate();
+  const [imgError, setImgError] = useState(false);
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      <div className="absolute inset-0">
-        <img
-          src={heroBg}
-          alt="Résidence de luxe"
-          className="w-full h-full object-cover"
-          width={1920}
-          height={1080}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background" />
-      </div>
+      {/* Fond dégradé de secours toujours présent */}
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-[hsl(43,30%,8%)]" />
+
+      {/* Image de fond (si disponible) */}
+      {!imgError && (
+        <div className="absolute inset-0">
+          <img
+            src="/hero-bg.jpg"
+            alt=""
+            role="presentation"
+            className="w-full h-full object-cover opacity-40"
+            onError={() => setImgError(true)}
+            loading="eager"
+            decoding="async"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/50 to-background" />
+        </div>
+      )}
 
       <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/30 bg-primary/5 mb-8">
@@ -24,13 +33,13 @@ const HeroSection = () => {
           <span className="text-sm text-primary font-body">Plateforme d'offres inversées</span>
         </div>
 
-        <h1 className="text-5xl md:text-7xl font-heading font-bold mb-6 leading-tight">
+        <h1 className="text-4xl sm:text-5xl md:text-7xl font-heading font-bold mb-6 leading-tight">
           <span className="text-foreground">Proposez votre prix,</span>
           <br />
           <span className="text-gradient-gold">récoltez le meilleur.</span>
         </h1>
 
-        <p className="text-lg md:text-xl text-muted-foreground font-body max-w-2xl mx-auto mb-10 leading-relaxed">
+        <p className="text-base sm:text-lg md:text-xl text-muted-foreground font-body max-w-2xl mx-auto mb-10 leading-relaxed">
           Moisson révolutionne la réservation de logements. Proposez votre budget,
           et les résidences disponibles vous répondent en temps réel.
         </p>
